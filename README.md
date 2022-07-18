@@ -1,4 +1,4 @@
-# PUDDLESPAPERCO
+# PuddlesPaperCo
 
 ## About the Project
 
