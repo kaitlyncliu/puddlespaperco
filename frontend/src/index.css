@@ -14,6 +14,18 @@ body {
 main {
 	flex: 1;
 }
+
+.btn-primary {
+	background-color: #72cbe9;
+	color: #ffffff;
+	border-radius: 0.5rem;
+	border-width: 0;
+}
+
+.rating span {
+	color: #72cbe9;
+}
+
 .products {
 	display: flex;
 	flex-wrap: wrap;
@@ -32,4 +44,8 @@ main {
 
 .product-info {
 	padding: 1rem;
+}
+
+.img-large {
+	max-width: 100%;
 }
