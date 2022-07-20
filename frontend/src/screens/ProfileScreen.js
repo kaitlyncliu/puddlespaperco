@@ -1,75 +1,83 @@
-import Form from 'react-bootstrap/Form';
-import { useLocation, useNavigate } from 'react-router-dom';
-import Container from 'react-bootstrap/Container';
-import Button from 'react-bootstrap/Button';
+import React, { useContext, useReducer, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { Link } from 'react-router-dom';
-import Axios from 'axios';
-import { useContext, useEffect, useState } from 'react';
 import { Store } from '../Store';
+import Form from 'react-bootstrap/Form';
+import Button from 'react-bootstrap/Button';
 import { toast } from 'react-toastify';
 import { getError } from '../util';
+import axios from 'axios';
 
-export default function SignUpScreen() {
-	const navigate = useNavigate();
-	const { search } = useLocation();
-	const redirectInUrl = new URLSearchParams(search).get('redirect');
-	const redirect = redirectInUrl ? redirectInUrl : '/';
+const reducer = (state, action) => {
+	switch (action.type) {
+		case 'UPDATE_REQUEST':
+			return { ...state, loadingUpdate: true };
+		case 'UPDATE_SUCCESS':
+			return { ...state, loadingUpdate: false };
+		case 'UPDATE_FAIL':
+			return { ...state, loadingUpdate: false };
 
-	const [name, setName] = useState('');
-	const [email, setEmail] = useState('');
+		default:
+			return state;
+	}
+};
+
+export default function ProfileScreen() {
+	const { state, dispatch: ctxDispatch } = useContext(Store);
+	const { userInfo } = state;
+	const [name, setName] = useState(userInfo.name);
+	const [email, setEmail] = useState(userInfo.email);
 	const [password, setPassword] = useState('');
 	const [confirmPassword, setConfirmPassword] = useState('');
 
-	const { state, dispatch: ctxDispatch } = useContext(Store);
-	const { userInfo } = state;
+	const [{ loadingUpdate }, dispatch] = useReducer(reducer, {
+		loadingUpdate: false,
+	});
 
 	const submitHandler = async (e) => {
 		e.preventDefault();
-		if (password !== confirmPassword) {
-			toast.error('Passwords do not match');
-			return;
-		}
 		try {
-			const { data } = await Axios.post('/api/users/signup', {
-				name,
-				email,
-				password,
+			const { data } = await axios.put(
+				'api/users/profile',
+				{
+					name,
+					email,
+					password,
+				},
+				{ headers: { Authorization: `Bearer ${userInfo.token}` } }
+			);
+			dispatch({
+				type: 'UPDATE_SUCCESS',
 			});
+
 			ctxDispatch({ type: 'USER_SIGNIN', payload: data });
 			localStorage.setItem('userInfo', JSON.stringify(data));
-			navigate(redirect || '/');
+			toast.success('User updated successfully');
 		} catch (err) {
+			dispatch({ type: 'FETCH_FAIL' });
 			toast.error(getError(err));
 		}
 	};
 
-	useEffect(() => {
-		if (userInfo) {
-			navigate(redirect);
-		}
-	}, [navigate, redirect, userInfo]);
-
 	return (
-		<Container className="small-container">
+		<div className="container small-container">
 			<Helmet>
-				<title>Sign Up</title>
+				<title>User Profile</title>
 			</Helmet>
-			<h1 className="my-3">Sign Up</h1>
+			<h1 className="my-3">User Profile</h1>
 			<Form onSubmit={submitHandler}>
 				<Form.Group className="mb-3" controlId="name">
 					<Form.Label>Name</Form.Label>
 					<Form.Control
-						type="name"
+						value={name}
 						required
 						onChange={(e) => setName(e.target.value)}
 					></Form.Control>
 				</Form.Group>
-
 				<Form.Group className="mb-3" controlId="email">
 					<Form.Label>Email</Form.Label>
 					<Form.Control
 						type="email"
+						value={email}
 						required
 						onChange={(e) => setEmail(e.target.value)}
 					></Form.Control>
@@ -78,7 +86,6 @@ export default function SignUpScreen() {
 					<Form.Label>Password</Form.Label>
 					<Form.Control
 						type="password"
-						required
 						onChange={(e) => setPassword(e.target.value)}
 					></Form.Control>
 				</Form.Group>
@@ -86,18 +93,13 @@ export default function SignUpScreen() {
 					<Form.Label>Confirm Password</Form.Label>
 					<Form.Control
 						type="password"
-						required
 						onChange={(e) => setConfirmPassword(e.target.value)}
 					></Form.Control>
 				</Form.Group>
 				<div className="mb-3">
-					<Button type="submit">Sign Up</Button>
-				</div>
-				<div className="mb-3">
-					Already have an account?{' '}
-					<Link to={`/signin?redirect=${redirect}`}>Sign In</Link>
+					<Button type="submit">Update</Button>
 				</div>
 			</Form>
-		</Container>
+		</div>
 	);
 }
