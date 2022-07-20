@@ -1,7 +1,23 @@
+import bcrypt from 'bcryptjs';
+
 const data = {
+	users: [
+		{
+			name: 'Kaitlyn',
+			email: 'admin@example.com',
+			password: bcrypt.hashSync('123456'),
+			isAdmin: true,
+		},
+		{
+			name: 'John',
+			email: 'user@example.com',
+			password: bcrypt.hashSync('123456'),
+			isAdmin: false,
+		},
+	],
+
 	products: [
 		{
-			_id: '1',
 			name: 'Peanuts - Anya Forger Keychain',
 			slug: 'anya-keychain',
 			category: 'Keychains',
@@ -13,7 +29,6 @@ const data = {
 			description: 'A cute keychain',
 		},
 		{
-			_id: '2',
 			name: 'Bready Bakerie',
 			slug: 'bread-stickers',
 			category: 'Sticker Sheet',
@@ -25,7 +40,6 @@ const data = {
 			description: 'A cute sticker sheet',
 		},
 		{
-			_id: '3',
 			name: 'Forest Friends Sticker Sheet',
 			slug: 'forest-stickers',
 			category: 'Sticker Sheet',
@@ -37,7 +51,6 @@ const data = {
 			description: 'A cute sticker sheet',
 		},
 		{
-			_id: '4',
 			name: 'Strawberry Delights',
 			slug: 'strawberry-stickers',
 			category: 'Sticker Sheet',
