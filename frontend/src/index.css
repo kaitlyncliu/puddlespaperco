@@ -15,15 +15,20 @@ main {
 	flex: 1;
 }
 
-.btn-primary {
-	background-color: #72cbe9;
+a {
+	text-decoration: none;
+}
+
+.btn-primary,
+.btn-outline-primary {
+	background-color: #457bad;
 	color: #ffffff;
 	border-radius: 0.5rem;
 	border-width: 0;
 }
 
 .rating span {
-	color: #72cbe9;
+	color: #457bad;
 }
 
 .products {
@@ -64,6 +69,38 @@ main {
 }
 
 .checkout-steps > div.active {
-	border-bottom: 0.2rem solid #72cbe9;
-	color: #72cbe9;
+	border-bottom: 0.2rem solid #457bad;
+	color: #457bad;
+}
+
+.custom-link-container {
+	color: #f1faee;
+	text-indent: 10px;
+}
+
+/* sidebar */
+.side-navbar {
+	width: 240px;
+	height: 100%;
+	position: absolute;
+	left: -300px;
+	background-color: #212529;
+	transition: 0.5s;
+}
+.site-container {
+	transition: 0.4s;
+}
+.active-cont {
+	margin-left: 240px;
+}
+.active-nav {
+	left: 0;
+}
+
+.text-bold {
+	font-weight: bold;
+}
+
+ul {
+	list-style-type: none;
 }
