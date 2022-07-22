@@ -9,32 +9,13 @@ import { Store } from '../Store';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import axios from 'axios';
-import { toast } from 'react-toastify';
-import { getError } from '../util';
 import LoadingBox from '../Components/LoadingBox';
-
-const reducer = (state, action) => {
-	switch (action.type) {
-		case 'CREATE_REQUEST':
-			return { ...state, loading: true };
-		case 'CREATE_SUCCESS':
-			return { ...state, loading: false };
-		case 'CREATE_FAIL':
-			return { ...state, loading: false };
-		default:
-			return state;
-	}
-};
 
 export default function CartScreen() {
 	const navigate = useNavigate();
 	const { state, dispatch: ctxDispatch } = useContext(Store);
-	const [{ loading }, dispatch] = useReducer(reducer, {
-		loading: false,
-	});
 	const {
 		cart: { cartItems },
-		userInfo,
 	} = state;
 
 	const updateCartHandler = async (item, quantity) => {
@@ -50,33 +31,12 @@ export default function CartScreen() {
 		});
 	};
 
-	const removeItemHandler = (item) => {
-		ctxDispatch({ type: 'CART_REMOVE_ITEM', payload: item });
+	const checkoutHandler = () => {
+		navigate('/signin?redirect=/payment');
 	};
 
-	const checkoutHandler = async () => {
-		try {
-			dispatch({ type: 'CREATE_REQUEST' });
-			const res = await axios.post(
-				'/api/create-checkout-session',
-				{
-					cartItems: cartItems,
-				},
-				{
-					headers: {
-						authorization: `Bearer ${userInfo.token}`,
-					},
-				}
-			);
-			ctxDispatch({ type: 'CART_CLEAR' });
-			dispatch({ type: 'CREATE_SUCCESS' });
-			localStorage.removeItem('cartItems');
-			console.log(res.data);
-			window.location.href = res.data.url;
-		} catch (err) {
-			dispatch({ type: 'CREATE_FAIL' });
-			toast.error(getError(err));
-		}
+	const removeItemHandler = (item) => {
+		ctxDispatch({ type: 'CART_REMOVE_ITEM', payload: item });
 	};
 
 	return (
@@ -163,7 +123,6 @@ export default function CartScreen() {
 										>
 											Proceed to Checkout
 										</Button>
-										{loading && <LoadingBox></LoadingBox>}
 									</div>
 								</ListGroup.Item>
 							</ListGroup>

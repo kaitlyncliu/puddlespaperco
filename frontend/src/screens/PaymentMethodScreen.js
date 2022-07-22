@@ -1,38 +1,80 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useReducer, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import CheckoutSteps from '../Components/CheckoutSteps';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import { Store } from '../Store';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { getError } from '../util';
+import axios from 'axios';
+import LoadingBox from '../Components/LoadingBox';
+
+const reducer = (state, action) => {
+	switch (action.type) {
+		case 'CREATE_REQUEST':
+			return { ...state, loading: true };
+		case 'CREATE_SUCCESS':
+			return { ...state, loading: false };
+		case 'CREATE_FAIL':
+			return { ...state, loading: false };
+		default:
+			return state;
+	}
+};
 
 export default function PaymentMethodScreen() {
 	const navigate = useNavigate();
 	const { state, dispatch: ctxDispatch } = useContext(Store);
+	const [{ loading }, dispatch] = useReducer(reducer, {
+		loading: false,
+	});
 	const {
-		cart: { shippingAddress, paymentMethod },
+		cart: { paymentMethod, cartItems },
+		userInfo,
 	} = state;
 	const [paymentMethodName, setPaymentMethod] = useState(
 		paymentMethod || 'PayPal'
 	);
 
-	useEffect(() => {
-		if (!shippingAddress.address) {
-			navigate('/shipping');
-		}
-	}, [shippingAddress, navigate]);
+	// useEffect(() => {
+	// 	if (!shippingAddress.address) {
+	// 		navigate('/shipping');
+	// 	}
+	// }, [shippingAddress, navigate]);
 
-	const submitHandler = (e) => {
+	const submitStripeHandler = async (e) => {
+		e.preventDefault();
+		try {
+			dispatch({ type: 'CREATE_REQUEST' });
+			const res = await axios.post(
+				'/api/create-checkout-session',
+				{
+					cartItems: cartItems,
+				},
+				{
+					headers: {
+						authorization: `Bearer ${userInfo.token}`,
+					},
+				}
+			);
+			ctxDispatch({ type: 'CART_CLEAR' });
+			dispatch({ type: 'CREATE_SUCCESS' });
+			localStorage.removeItem('cartItems');
+			console.log('redirecting');
+			window.location.href = res.data.url;
+		} catch (err) {
+			dispatch({ type: 'CREATE_FAIL' });
+			toast.error(getError(err));
+		}
+	};
+
+	const submitPaypalHandler = (e) => {
 		e.preventDefault();
 		ctxDispatch({ type: 'SAVE_PAYMENT_METHOD', payload: paymentMethodName });
 		console.log(paymentMethodName);
 		localStorage.setItem('paymentMethod', paymentMethodName);
-		navigate('/placeorder');
-
-		/**
-		paymentMethodName === 'Stripe'
-			? navigate('/orders/create-checkout-session')
-			: navigate('/placeorder'); */
+		navigate('/shipping');
 	};
 
 	return (
@@ -43,7 +85,13 @@ export default function PaymentMethodScreen() {
 					<title>Payment Method</title>
 				</Helmet>
 				<h1 className="my-3">Payment Method</h1>
-				<Form onSubmit={submitHandler}>
+				<Form
+					onSubmit={
+						paymentMethodName === 'PayPal'
+							? submitPaypalHandler
+							: submitStripeHandler
+					}
+				>
 					<div className="mb-3">
 						<Form.Check
 							type="radio"
@@ -66,6 +114,7 @@ export default function PaymentMethodScreen() {
 					</div>
 					<div className="mb-3">
 						<Button type="submit">Continue</Button>
+						{loading && <LoadingBox></LoadingBox>}
 					</div>
 				</Form>
 			</div>
