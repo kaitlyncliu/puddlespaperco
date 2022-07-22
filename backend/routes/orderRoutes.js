@@ -2,6 +2,7 @@ import express from 'express';
 import Order from '../models/orderModel.js';
 import expressAsyncHandler from 'express-async-handler';
 import { generateToken, isAuth } from '../utils.js';
+import Stripe from 'stripe';
 
 const orderRouter = express.Router();
 

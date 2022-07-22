@@ -191,6 +191,7 @@ function App() {
 								}
 							/>
 							<Route path="/search" element={<SearchScreen />} />
+							<Route path="/paid" />
 						</Routes>
 					</Container>
 				</main>

@@ -28,11 +28,16 @@ export default function PaymentMethodScreen() {
 		console.log(paymentMethodName);
 		localStorage.setItem('paymentMethod', paymentMethodName);
 		navigate('/placeorder');
+
+		/**
+		paymentMethodName === 'Stripe'
+			? navigate('/orders/create-checkout-session')
+			: navigate('/placeorder'); */
 	};
 
 	return (
 		<div>
-			<CheckoutSteps step1 step2 step3></CheckoutSteps>
+			<CheckoutSteps step1 step2 step3 step4></CheckoutSteps>
 			<div className="container small-container">
 				<Helmet>
 					<title>Payment Method</title>
