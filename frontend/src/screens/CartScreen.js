@@ -4,11 +4,12 @@ import { Helmet } from 'react-helmet-async';
 import MessageBox from '../Components/MessageBox';
 import ListGroup from 'react-bootstrap/ListGroup';
 import { Link, useNavigate } from 'react-router-dom';
-import { useContext } from 'react';
+import { useContext, useReducer } from 'react';
 import { Store } from '../Store';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import axios from 'axios';
+import LoadingBox from '../Components/LoadingBox';
 
 export default function CartScreen() {
 	const navigate = useNavigate();
@@ -30,12 +31,12 @@ export default function CartScreen() {
 		});
 	};
 
-	const removeItemHandler = (item) => {
-		ctxDispatch({ type: 'CART_REMOVE_ITEM', payload: item });
+	const checkoutHandler = () => {
+		navigate('/signin?redirect=/payment');
 	};
 
-	const checkoutHandler = () => {
-		navigate('/signin?redirect=/shipping');
+	const removeItemHandler = (item) => {
+		ctxDispatch({ type: 'CART_REMOVE_ITEM', payload: item });
 	};
 
 	return (

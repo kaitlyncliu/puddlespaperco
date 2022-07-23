@@ -43,7 +43,7 @@ export default function ShippingScreen() {
 			'shippingAddress',
 			JSON.stringify({ fullName, address, city, zipCode, country })
 		);
-		navigate('/payment');
+		navigate('/placeorder');
 	};
 
 	return (

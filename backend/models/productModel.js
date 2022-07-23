@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import Stripe from 'stripe';
 
 const productSchema = new mongoose.Schema(
 	{

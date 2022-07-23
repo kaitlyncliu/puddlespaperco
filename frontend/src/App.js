@@ -26,6 +26,7 @@ import axios from 'axios';
 import SearchBar from './Components/SearchBar';
 import SearchScreen from './screens/SearchScreen';
 import ProtectedRoute from './Components/ProtectedRoute';
+import CheckoutSuccessScreen from './screens/CheckoutSuccessScreen';
 
 function App() {
 	const { state, dispatch: ctxDispatch } = useContext(Store);
@@ -191,6 +192,10 @@ function App() {
 								}
 							/>
 							<Route path="/search" element={<SearchScreen />} />
+							<Route
+								path="/checkout-success"
+								element={<CheckoutSuccessScreen />}
+							/>
 						</Routes>
 					</Container>
 				</main>
