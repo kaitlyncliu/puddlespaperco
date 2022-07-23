@@ -54,7 +54,7 @@ app.post('/api/create-checkout-session', isAuth, async (req, res) => {
 		})),
 		mode: 'payment',
 		success_url: `${process.env.CLIENT_URL}/checkout-success`,
-		cancel_url: `${process.env.CLIENT_URL}/shipping`,
+		cancel_url: `${process.env.CLIENT_URL}/cart`,
 	});
 	res.json({ url: session.url });
 	console.log(res);
