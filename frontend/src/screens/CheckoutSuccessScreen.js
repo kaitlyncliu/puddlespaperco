@@ -44,6 +44,7 @@ export default function CheckoutSuccessScreen() {
 
 	useEffect(() => {
 		ctxDispatch({ type: 'CART_CLEAR' });
+		localStorage.removeItem('cartItems');
 	}, []);
 
 	return (

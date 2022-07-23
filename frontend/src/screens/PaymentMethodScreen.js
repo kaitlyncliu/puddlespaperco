@@ -58,10 +58,7 @@ export default function PaymentMethodScreen() {
 					},
 				}
 			);
-			ctxDispatch({ type: 'CART_CLEAR' });
 			dispatch({ type: 'CREATE_SUCCESS' });
-			localStorage.removeItem('cartItems');
-			console.log('redirecting');
 			window.location.href = res.data.url;
 		} catch (err) {
 			dispatch({ type: 'CREATE_FAIL' });

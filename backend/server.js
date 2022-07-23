@@ -10,6 +10,7 @@ import productRouter from './routes/productRoutes.js';
 import userRouter from './routes/userRoutes.js';
 import orderRouter from './routes/orderRoutes.js';
 import { isAuth } from './utils.js';
+import Product from './models/productModel.js';
 
 dotenv.config();
 
@@ -40,24 +41,28 @@ app.get('/api/keys/paypal', (req, res) => {
 });
 
 app.post('/api/create-checkout-session', isAuth, async (req, res) => {
-	const cartItems = req.body;
+	const cartItems = req.body.cartItems;
+	const listIds = cartItems.map((x) => x._id);
+	const idQuantity = new Map();
+	cartItems.map((x) => idQuantity.set(x._id, x.quantity));
+	const listItems = await Product.find({ _id: listIds });
 	const session = await stripe.checkout.sessions.create({
-		line_items: req.body.cartItems.map((c) => ({
+		line_items: listItems.map((x) => ({
 			price_data: {
 				currency: 'usd',
 				product_data: {
-					name: c.name,
+					name: x.name,
 				},
-				unit_amount: Math.round(c.price * 100),
+				unit_amount: Math.round(x.price * 100),
 			},
-			quantity: c.quantity,
+			quantity: idQuantity.get(x._id.valueOf()),
 		})),
 		mode: 'payment',
 		success_url: `${process.env.CLIENT_URL}/checkout-success`,
-		cancel_url: `${process.env.CLIENT_URL}/shipping`,
+		cancel_url: `${process.env.CLIENT_URL}/cart`,
 	});
+
 	res.json({ url: session.url });
-	console.log(res);
 });
 
 app.use('/api/seed', seedRouter);
