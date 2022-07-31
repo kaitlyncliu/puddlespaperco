@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import { auth, requiredScopes } from 'express-oauth2-jwt-bearer';
 
 export const generateToken = (user) => {
 	return jwt.sign(
@@ -31,3 +32,8 @@ export const isAuth = (req, res, next) => {
 		res.status(401).send({ message: 'No Token' });
 	}
 };
+
+export const checkJwt = auth({
+	audience: 'http://localhost:5000',
+	issuerBaseURL: `https://localhost:3000`,
+});
