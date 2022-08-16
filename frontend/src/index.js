@@ -7,24 +7,18 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { StoreProvider } from './Store';
 import { PayPalScriptProvider } from '@paypal/react-paypal-js';
-import { Auth0Provider } from '@auth0/auth0-react';
+// import { Auth0Provider } from '@auth0/auth0-react';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
 	<React.StrictMode>
-		<Auth0Provider
-			domain="dev-qmtahjgk.us.auth0.com"
-			clientId="Tu6Xif54ZvLYY3ji3TcnfiNmXmoPyzF0"
-			redirectUri={window.location.origin}
-		>
-			<StoreProvider>
-				<HelmetProvider>
-					<PayPalScriptProvider deferLoading={true}>
-						<App />
-					</PayPalScriptProvider>
-				</HelmetProvider>
-			</StoreProvider>
-		</Auth0Provider>
+		<StoreProvider>
+			<HelmetProvider>
+				<PayPalScriptProvider deferLoading={true}>
+					<App />
+				</PayPalScriptProvider>
+			</HelmetProvider>
+		</StoreProvider>
 	</React.StrictMode>
 );
 

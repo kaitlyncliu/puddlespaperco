@@ -37,8 +37,8 @@ import LoadingBox from './Components/LoadingBox';
 function App() {
 	const { state, dispatch: ctxDispatch } = useContext(Store);
 	const { cart, userInfo } = state;
-	const { loginWithRedirect, logout, user, isAuthenticated, isLoading } =
-		useAuth0();
+	// const { loginWithRedirect, logout, user, isAuthenticated, isLoading } =
+	// 	useAuth0();
 
 	const signOutHandler = () => {
 		ctxDispatch({ type: 'USER_SIGNOUT' });
@@ -176,32 +176,11 @@ function App() {
 							<Route path="/signin" element={<SignInScreen />} />
 							<Route path="/shipping" element={<ShippingScreen />} />
 							<Route path="/signup" element={<SignUpScreen />} />
-							<Route
-								path="/profile"
-								element={
-									<ProtectedRoute>
-										<ProfileScreen />
-									</ProtectedRoute>
-								}
-							/>
+							<Route path="/profile" element={<ProfileScreen />} />
 							<Route path="/payment" element={<PaymentMethodScreen />} />
 							<Route path="/placeorder" element={<PlaceOrderScreen />} />
-							<Route
-								path="/order/:id"
-								element={
-									<ProtectedRoute>
-										<OrderScreen />
-									</ProtectedRoute>
-								}
-							/>
-							<Route
-								path="/orderhistory"
-								element={
-									<ProtectedRoute>
-										<OrderHistoryScreen />
-									</ProtectedRoute>
-								}
-							/>
+							<Route path="/order/:id" element={<OrderScreen />} />
+							<Route path="/orderhistory" element={<OrderHistoryScreen />} />
 							<Route path="/search" element={<SearchScreen />} />
 							<Route
 								path="/checkout-success"

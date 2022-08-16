@@ -3,12 +3,13 @@ import Order from '../models/orderModel.js';
 import expressAsyncHandler from 'express-async-handler';
 import { generateToken, isAuth } from '../utils.js';
 import Stripe from 'stripe';
+import { requiresAuth } from 'express-openid-connect';
 
 const orderRouter = express.Router();
 
 orderRouter.post(
 	'/',
-	isAuth,
+	requiresAuth,
 	expressAsyncHandler(async (req, res) => {
 		const newOrder = new Order({
 			orderItems: req.body.orderItems.map((x) => ({ ...x, product: x._id })),
@@ -28,7 +29,7 @@ orderRouter.post(
 
 orderRouter.get(
 	'/mine',
-	isAuth,
+	requiresAuth,
 	expressAsyncHandler(async (req, res) => {
 		const orders = await Order.find({ user: req.user._id });
 		res.send(orders);
@@ -37,7 +38,7 @@ orderRouter.get(
 
 orderRouter.get(
 	'/:id',
-	isAuth,
+	requiresAuth,
 	expressAsyncHandler(async (req, res) => {
 		const order = await Order.findById(req.params.id);
 		if (order) {
@@ -50,7 +51,7 @@ orderRouter.get(
 
 orderRouter.put(
 	'/:id/pay',
-	isAuth,
+	requiresAuth,
 	expressAsyncHandler(async (req, res) => {
 		const order = await Order.findById(req.params.id);
 		if (order) {

@@ -1,4 +1,5 @@
 import express, { application } from 'express';
+import { auth, requiresAuth } from 'express-openid-connect';
 import path from 'path';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
@@ -26,8 +27,27 @@ mongoose
 const app = express();
 const stripe = Stripe(process.env.STRIPE_PRIVATE_KEY);
 
+const config = {
+	authRequired: false,
+	auth0Logout: true,
+	baseURL: process.env.CLIENT_URL,
+	response_type: 'code', // This requires you to provide a client secret
+	clientID: process.env.AUTH0_CLIENT_ID,
+	issuerBaseURL: process.env.AUTH0_ISSUER_URL,
+	secret: process.env.JWT_SECRET,
+	idpLogout: true,
+};
+
+app.use(auth(config));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// req.oidc.isAuthenticated is provided from the auth router
+app.get('/', (req, res) => {
+	res.send(req.oidc.isAuthenticated() ? 'Logged in' : 'Logged out');
+});
+
 app.options('/api/create-checkout-session', cors());
 app.use(
 	cors({
@@ -40,7 +60,7 @@ app.get('/api/keys/paypal', (req, res) => {
 	res.send(process.env.PAYPAL_CLIENT_ID || 'sb');
 });
 
-app.post('/api/create-checkout-session', isAuth, async (req, res) => {
+app.post('/api/create-checkout-session', requiresAuth, async (req, res) => {
 	const cartItems = req.body.cartItems;
 	const listIds = cartItems.map((x) => x._id);
 	const idQuantity = new Map();

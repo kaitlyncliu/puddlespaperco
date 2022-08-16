@@ -3,6 +3,7 @@ import User from '../models/userModel.js';
 import bcrypt from 'bcryptjs';
 import expressAsyncHandler from 'express-async-handler';
 import { generateToken, isAuth } from '../utils.js';
+import { requiresAuth } from 'express-openid-connect';
 
 const userRouter = express.Router();
 
@@ -47,7 +48,7 @@ userRouter.post(
 
 userRouter.put(
 	'/profile',
-	isAuth,
+	requiresAuth,
 	expressAsyncHandler(async (req, res) => {
 		const user = await User.findById(req.user._id);
 		if (user) {
