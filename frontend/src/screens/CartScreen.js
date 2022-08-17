@@ -57,10 +57,9 @@ export default function CartScreen() {
 	};
 
 	const submitStripeHandler = async (e) => {
-		e.preventDefault();
 		dispatch({ type: 'CREATE_REQUEST' });
 		try {
-			const token = getAccessTokenSilently();
+			const token = await getAccessTokenSilently();
 			const res = await axios.post(
 				'/api/create-checkout-session',
 				{
@@ -81,7 +80,7 @@ export default function CartScreen() {
 	};
 
 	const checkoutHandler = () => {
-		!isLoading & isAuthenticated ? navigate('/payment') : loginWithRedirect();
+		!isLoading & isAuthenticated ? submitStripeHandler() : loginWithRedirect();
 	};
 
 	const removeItemHandler = (item) => {
@@ -167,7 +166,7 @@ export default function CartScreen() {
 										<Button
 											type="button"
 											variant="primary"
-											onClick={submitStripeHandler}
+											onClick={checkoutHandler}
 											disabled={cartItems.length === 0}
 										>
 											Proceed to Checkout

@@ -26,7 +26,7 @@ export default function OrderHistoryScreen() {
 	const { state } = useContext(Store);
 	const { userInfo } = state;
 	const navigate = useNavigate();
-	const { getAccessTokenSilently } = useAuth0();
+	const { getAccessTokenSilently, user } = useAuth0();
 
 	const [{ loading, error, orders }, dispatch] = useReducer(reducer, {
 		loading: true,
@@ -37,12 +37,12 @@ export default function OrderHistoryScreen() {
 			dispatch({ type: 'FETCH_REQUEST' });
 			try {
 				const token = await getAccessTokenSilently();
-				console.log(token);
-				const { data } = await axios.get(
-					`/api/orders/mine`,
-
-					{ headers: { Authorization: `Bearer ${token}` } }
-				);
+				const { data } = await axios.get(`/api/orders/mine`, {
+					params: {
+						userId: user.sub,
+					},
+					headers: { Authorization: `Bearer ${token}` },
+				});
 				dispatch({ type: 'FETCH_SUCCESS', payload: data });
 			} catch (error) {
 				dispatch({
@@ -52,7 +52,7 @@ export default function OrderHistoryScreen() {
 			}
 		};
 		fetchData();
-	}, [userInfo, getAccessTokenSilently]);
+	}, [userInfo, getAccessTokenSilently, user.sub]);
 	return (
 		<div>
 			<Helmet>
@@ -71,7 +71,6 @@ export default function OrderHistoryScreen() {
 							<th>ID</th>
 							<th>DATE</th>
 							<th>TOTAL</th>
-							<th>PAID</th>
 							<th>DELIVERED</th>
 							<th>ACTIONS</th>
 						</tr>
@@ -82,7 +81,6 @@ export default function OrderHistoryScreen() {
 								<td>{order._id}</td>
 								<td>{order.createdAt.substring(0, 10)}</td>
 								<td>{order.totalPrice.toFixed(2)}</td>
-								<td>{order.isPaid ? order.paidAt.substring(0, 10) : 'No'}</td>
 								<td>
 									{order.isDelivered
 										? order.deliveredAt.substring(0, 10)

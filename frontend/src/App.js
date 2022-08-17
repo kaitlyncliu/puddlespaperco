@@ -173,16 +173,6 @@ function App() {
 							<Route path="/shipping" element={<ShippingScreen />} />
 							<Route path="/signup" element={<SignUpScreen />} />
 							<Route
-								path="/profile"
-								element={
-									<ProtectedRoute>
-										<ProfileScreen />
-									</ProtectedRoute>
-								}
-							/>
-							<Route path="/payment" element={<PaymentMethodScreen />} />
-							<Route path="/placeorder" element={<PlaceOrderScreen />} />
-							<Route
 								path="/order/:id"
 								element={
 									<ProtectedRoute>
