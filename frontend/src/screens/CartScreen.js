@@ -11,11 +11,34 @@ import Card from 'react-bootstrap/Card';
 import axios from 'axios';
 import LoadingBox from '../Components/LoadingBox';
 import { useAuth0 } from '@auth0/auth0-react';
+import { toast } from 'react-toastify';
+import { getError } from '../util';
+
+const orderReducer = (state, action) => {
+	switch (action.type) {
+		case 'CREATE_REQUEST':
+			return { ...state, loading: true };
+		case 'CREATE_SUCCESS':
+			return { ...state, loading: false };
+		case 'CREATE_FAIL':
+			return { ...state, loading: false };
+		default:
+			return state;
+	}
+};
 
 export default function CartScreen() {
 	const navigate = useNavigate();
 	const { state, dispatch: ctxDispatch } = useContext(Store);
-	const { loginWithRedirect, isAuthenticated, isLoading } = useAuth0();
+	const [{ loading }, dispatch] = useReducer(orderReducer, {
+		loading: false,
+	});
+	const {
+		loginWithRedirect,
+		isAuthenticated,
+		isLoading,
+		getAccessTokenSilently,
+	} = useAuth0();
 	const {
 		cart: { cartItems },
 	} = state;
@@ -31,6 +54,30 @@ export default function CartScreen() {
 			type: 'CART_ADD_ITEM',
 			payload: { ...item, quantity: quantity },
 		});
+	};
+
+	const submitStripeHandler = async (e) => {
+		e.preventDefault();
+		dispatch({ type: 'CREATE_REQUEST' });
+		try {
+			const token = getAccessTokenSilently();
+			const res = await axios.post(
+				'/api/create-checkout-session',
+				{
+					cartItems: cartItems,
+				},
+				{
+					headers: {
+						Authorization: `Bearer ${token}`,
+					},
+				}
+			);
+			dispatch({ type: 'CREATE_SUCCESS' });
+			window.location.href = res.data.url;
+		} catch (err) {
+			dispatch({ type: 'CREATE_FAIL' });
+			toast.error(getError(err));
+		}
 	};
 
 	const checkoutHandler = () => {
@@ -120,7 +167,7 @@ export default function CartScreen() {
 										<Button
 											type="button"
 											variant="primary"
-											onClick={checkoutHandler}
+											onClick={submitStripeHandler}
 											disabled={cartItems.length === 0}
 										>
 											Proceed to Checkout
