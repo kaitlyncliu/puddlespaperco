@@ -6,7 +6,6 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { StoreProvider } from './Store';
-import { PayPalScriptProvider } from '@paypal/react-paypal-js';
 import { Auth0Provider } from '@auth0/auth0-react';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -20,9 +19,7 @@ root.render(
 		>
 			<StoreProvider>
 				<HelmetProvider>
-					<PayPalScriptProvider deferLoading={true}>
-						<App />
-					</PayPalScriptProvider>
+					<App />
 				</HelmetProvider>
 			</StoreProvider>
 		</Auth0Provider>
