@@ -7,6 +7,7 @@ import MessageBox from '../Components/MessageBox';
 import Button from 'react-bootstrap/Button';
 import { Store } from '../Store';
 import { getError } from '../util';
+import { useAuth0 } from '@auth0/auth0-react';
 
 const reducer = (state, action) => {
 	switch (action.type) {
@@ -25,6 +26,7 @@ export default function OrderHistoryScreen() {
 	const { state } = useContext(Store);
 	const { userInfo } = state;
 	const navigate = useNavigate();
+	const { getAccessTokenSilently } = useAuth0();
 
 	const [{ loading, error, orders }, dispatch] = useReducer(reducer, {
 		loading: true,
@@ -34,10 +36,12 @@ export default function OrderHistoryScreen() {
 		const fetchData = async () => {
 			dispatch({ type: 'FETCH_REQUEST' });
 			try {
+				const token = await getAccessTokenSilently();
+				console.log(token);
 				const { data } = await axios.get(
 					`/api/orders/mine`,
 
-					{ headers: { Authorization: `Bearer ${userInfo.token}` } }
+					{ headers: { Authorization: `Bearer ${token}` } }
 				);
 				dispatch({ type: 'FETCH_SUCCESS', payload: data });
 			} catch (error) {
@@ -48,7 +52,7 @@ export default function OrderHistoryScreen() {
 			}
 		};
 		fetchData();
-	}, [userInfo]);
+	}, [userInfo, getAccessTokenSilently]);
 	return (
 		<div>
 			<Helmet>

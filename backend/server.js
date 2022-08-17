@@ -9,7 +9,7 @@ import seedRouter from './routes/seedRoutes.js';
 import productRouter from './routes/productRoutes.js';
 import userRouter from './routes/userRoutes.js';
 import orderRouter from './routes/orderRoutes.js';
-import { isAuth } from './utils.js';
+import { isAuth, verifyJwt } from './utils.js';
 import Product from './models/productModel.js';
 
 dotenv.config();
@@ -40,7 +40,7 @@ app.get('/api/keys/paypal', (req, res) => {
 	res.send(process.env.PAYPAL_CLIENT_ID || 'sb');
 });
 
-app.post('/api/create-checkout-session', isAuth, async (req, res) => {
+app.post('/api/create-checkout-session', verifyJwt, async (req, res) => {
 	const cartItems = req.body.cartItems;
 	const listIds = cartItems.map((x) => x._id);
 	const idQuantity = new Map();

@@ -1,5 +1,7 @@
 import jwt from 'jsonwebtoken';
-import { auth, requiredScopes } from 'express-oauth2-jwt-bearer';
+import { expressjwt } from 'express-jwt';
+import jwks from 'jwks-rsa';
+import axios from 'axios';
 
 export const generateToken = (user) => {
 	return jwt.sign(
@@ -33,7 +35,14 @@ export const isAuth = (req, res, next) => {
 	}
 };
 
-export const checkJwt = auth({
-	audience: 'http://localhost:5000',
-	issuerBaseURL: `https://localhost:3000`,
+export const verifyJwt = expressjwt({
+	secret: jwks.expressJwtSecret({
+		cache: true,
+		rateLimit: true,
+		jwksRequestsPerMinute: 5,
+		jwksUri: 'https://dev-qmtahjgk.us.auth0.com/.well-known/jwks.json',
+	}),
+	audience: 'https://puddlesbackendapi',
+	issuer: 'https://dev-qmtahjgk.us.auth0.com/',
+	algorithms: ['RS256'],
 });

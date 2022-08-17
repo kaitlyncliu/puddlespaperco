@@ -16,6 +16,7 @@ root.render(
 			domain="dev-qmtahjgk.us.auth0.com"
 			clientId="Tu6Xif54ZvLYY3ji3TcnfiNmXmoPyzF0"
 			redirectUri={window.location.origin}
+			audience="https://puddlesbackendapi"
 		>
 			<StoreProvider>
 				<HelmetProvider>

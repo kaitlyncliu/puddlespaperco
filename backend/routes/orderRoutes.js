@@ -1,14 +1,14 @@
 import express from 'express';
 import Order from '../models/orderModel.js';
 import expressAsyncHandler from 'express-async-handler';
-import { generateToken, isAuth } from '../utils.js';
+import { generateToken, isAuth, verifyJwt } from '../utils.js';
 import Stripe from 'stripe';
 
 const orderRouter = express.Router();
 
 orderRouter.post(
 	'/',
-	isAuth,
+	verifyJwt,
 	expressAsyncHandler(async (req, res) => {
 		const newOrder = new Order({
 			orderItems: req.body.orderItems.map((x) => ({ ...x, product: x._id })),
@@ -28,7 +28,7 @@ orderRouter.post(
 
 orderRouter.get(
 	'/mine',
-	isAuth,
+	verifyJwt,
 	expressAsyncHandler(async (req, res) => {
 		const orders = await Order.find({ user: req.user._id });
 		res.send(orders);
@@ -37,7 +37,7 @@ orderRouter.get(
 
 orderRouter.get(
 	'/:id',
-	isAuth,
+	verifyJwt,
 	expressAsyncHandler(async (req, res) => {
 		const order = await Order.findById(req.params.id);
 		if (order) {

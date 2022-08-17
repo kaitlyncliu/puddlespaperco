@@ -10,10 +10,12 @@ import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import axios from 'axios';
 import LoadingBox from '../Components/LoadingBox';
+import { useAuth0 } from '@auth0/auth0-react';
 
 export default function CartScreen() {
 	const navigate = useNavigate();
 	const { state, dispatch: ctxDispatch } = useContext(Store);
+	const { loginWithRedirect, isAuthenticated, isLoading } = useAuth0();
 	const {
 		cart: { cartItems },
 	} = state;
@@ -32,7 +34,7 @@ export default function CartScreen() {
 	};
 
 	const checkoutHandler = () => {
-		navigate('/signin?redirect=/payment');
+		!isLoading & isAuthenticated ? navigate('/payment') : loginWithRedirect();
 	};
 
 	const removeItemHandler = (item) => {
