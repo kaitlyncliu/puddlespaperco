@@ -1,6 +1,19 @@
 import { BrowserRouter, Link, Route, Routes } from 'react-router-dom';
+import { getError } from './util';
+import axios from 'axios';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { Store } from './Store';
+import { useContext, useEffect, useState } from 'react';
+// Screens
 import HomeScreen from './screens/HomeScreen';
 import ProductScreen from './screens/ProductScreen';
+import CartScreen from './screens/CartScreen';
+import OrderScreen from './screens/OrderScreen';
+import OrderHistoryScreen from './screens/OrderHistoryScreen';
+import CheckoutSuccessScreen from './screens/CheckoutSuccessScreen';
+import SearchScreen from './screens/SearchScreen';
+// Bootstrap
 import Navbar from 'react-bootstrap/Navbar';
 import Badge from 'react-bootstrap/Badge';
 import Nav from 'react-bootstrap/Nav';
@@ -8,36 +21,23 @@ import NavDropdown from 'react-bootstrap/NavDropdown';
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
 import { LinkContainer } from 'react-router-bootstrap';
-import { Store } from './Store';
-import { useContext, useEffect, useState } from 'react';
-import CartScreen from './screens/CartScreen';
-import SignInScreen from './screens/SignInScreen';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import ShippingScreen from './screens/ShippingScreen';
-import SignUpScreen from './screens/SignUpScreen';
-import PaymentMethodScreen from './screens/PaymentMethodScreen';
-import PlaceOrderScreen from './screens/PlaceOrderScreen';
-import OrderScreen from './screens/OrderScreen';
-import OrderHistoryScreen from './screens/OrderHistoryScreen';
-import ProfileScreen from './screens/ProfileScreen';
-import { getError } from './util';
-import axios from 'axios';
+// Components
 import SearchBar from './Components/SearchBar';
-import SearchScreen from './screens/SearchScreen';
 import ProtectedRoute from './Components/ProtectedRoute';
-import CheckoutSuccessScreen from './screens/CheckoutSuccessScreen';
+import { useAuth0 } from '@auth0/auth0-react';
 
 function App() {
 	const { state, dispatch: ctxDispatch } = useContext(Store);
-	const { cart, userInfo } = state;
+	const { cart } = state;
+	const { loginWithRedirect, logout, user, isAuthenticated, isLoading } =
+		useAuth0();
 
 	const signOutHandler = () => {
 		ctxDispatch({ type: 'USER_SIGNOUT' });
 		localStorage.removeItem('userInfo');
 		localStorage.removeItem('shippingAddress');
 		localStorage.removeItem('paymentMethod');
-		window.location.href = '/signin';
+		logout({ returnTo: window.location.origin });
 	};
 
 	const [sidebarIsOpen, setSidebarIsOpen] = useState(false);
@@ -89,8 +89,8 @@ function App() {
 											</Badge>
 										)}
 									</Link>
-									{userInfo ? (
-										<NavDropdown title={userInfo.name} id="basic-nav-dropdown">
+									{!isLoading & isAuthenticated ? (
+										<NavDropdown title={user.name} id="basic-nav-dropdown">
 											<LinkContainer to="/profile">
 												<NavDropdown.Item>User Profile</NavDropdown.Item>
 											</LinkContainer>
@@ -98,20 +98,19 @@ function App() {
 												<NavDropdown.Item>My Orders</NavDropdown.Item>
 											</LinkContainer>
 											<NavDropdown.Divider />
-											<Link
-												className="dropdown-item"
-												to="#signout"
-												onClick={signOutHandler}
-											>
-												Sign Out
-											</Link>
+											<NavDropdown.Item onClick={() => signOutHandler()}>
+												Logout
+											</NavDropdown.Item>
 										</NavDropdown>
 									) : (
-										<Link className="nav-link" to="/signin">
+										<Nav.Link
+											className="nav-link"
+											onClick={() => loginWithRedirect()}
+										>
 											Sign In
-										</Link>
+										</Nav.Link>
 									)}
-									{userInfo && userInfo.isAdmin && (
+									{/* {userInfo && userInfo.isAdmin && (
 										<NavDropdown title="Admin" id="admin-nav-dropdown">
 											<LinkContainer to="/dashboard">
 												<NavDropdown.Item>Dashboard</NavDropdown.Item>
@@ -126,7 +125,7 @@ function App() {
 												<NavDropdown.Item>Users</NavDropdown.Item>
 											</LinkContainer>
 										</NavDropdown>
-									)}
+									)} */}
 								</Nav>
 							</Navbar.Collapse>
 						</Container>
@@ -162,19 +161,6 @@ function App() {
 							<Route path="/product/:slug" element={<ProductScreen />} />
 							<Route path="/" element={<HomeScreen />} />
 							<Route path="/cart" element={<CartScreen />} />
-							<Route path="/signin" element={<SignInScreen />} />
-							<Route path="/shipping" element={<ShippingScreen />} />
-							<Route path="/signup" element={<SignUpScreen />} />
-							<Route
-								path="/profile"
-								element={
-									<ProtectedRoute>
-										<ProfileScreen />
-									</ProtectedRoute>
-								}
-							/>
-							<Route path="/payment" element={<PaymentMethodScreen />} />
-							<Route path="/placeorder" element={<PlaceOrderScreen />} />
 							<Route
 								path="/order/:id"
 								element={

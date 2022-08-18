@@ -1,12 +1,12 @@
 import axios from 'axios';
-import React, { useContext, useEffect, useReducer } from 'react';
+import React, { useEffect, useReducer } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router-dom';
 import LoadingBox from '../Components/LoadingBox';
 import MessageBox from '../Components/MessageBox';
 import Button from 'react-bootstrap/Button';
-import { Store } from '../Store';
 import { getError } from '../util';
+import { useAuth0 } from '@auth0/auth0-react';
 
 const reducer = (state, action) => {
 	switch (action.type) {
@@ -22,9 +22,8 @@ const reducer = (state, action) => {
 };
 
 export default function OrderHistoryScreen() {
-	const { state } = useContext(Store);
-	const { userInfo } = state;
 	const navigate = useNavigate();
+	const { getAccessTokenSilently, user } = useAuth0();
 
 	const [{ loading, error, orders }, dispatch] = useReducer(reducer, {
 		loading: true,
@@ -34,11 +33,13 @@ export default function OrderHistoryScreen() {
 		const fetchData = async () => {
 			dispatch({ type: 'FETCH_REQUEST' });
 			try {
-				const { data } = await axios.get(
-					`/api/orders/mine`,
-
-					{ headers: { Authorization: `Bearer ${userInfo.token}` } }
-				);
+				const token = await getAccessTokenSilently();
+				const { data } = await axios.get(`/api/orders/mine`, {
+					params: {
+						userId: user.sub,
+					},
+					headers: { Authorization: `Bearer ${token}` },
+				});
 				dispatch({ type: 'FETCH_SUCCESS', payload: data });
 			} catch (error) {
 				dispatch({
@@ -48,7 +49,7 @@ export default function OrderHistoryScreen() {
 			}
 		};
 		fetchData();
-	}, [userInfo]);
+	}, [getAccessTokenSilently, user.sub]);
 	return (
 		<div>
 			<Helmet>
@@ -67,7 +68,6 @@ export default function OrderHistoryScreen() {
 							<th>ID</th>
 							<th>DATE</th>
 							<th>TOTAL</th>
-							<th>PAID</th>
 							<th>DELIVERED</th>
 							<th>ACTIONS</th>
 						</tr>
@@ -77,12 +77,14 @@ export default function OrderHistoryScreen() {
 							<tr key={order._id}>
 								<td>{order._id}</td>
 								<td>{order.createdAt.substring(0, 10)}</td>
-								<td>{order.totalPrice.toFixed(2)}</td>
-								<td>{order.isPaid ? order.paidAt.substring(0, 10) : 'No'}</td>
 								<td>
-									{order.isDelivered
-										? order.deliveredAt.substring(0, 10)
-										: 'No'}
+									{(order.total / 100).toLocaleString('en-US', {
+										style: 'currency',
+										currency: 'USD',
+									})}
+								</td>
+								<td>
+									{order.isDelivered ? order.deliveryStatus : 'Not delivered'}
 								</td>
 								<td>
 									<Button

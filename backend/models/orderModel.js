@@ -2,43 +2,31 @@ import mongoose from 'mongoose';
 
 const orderSchema = new mongoose.Schema(
 	{
-		orderItems: [
+		userId: { type: String, required: true },
+		customerId: { type: String },
+		paymentIntentId: { type: String },
+		products: [
 			{
+				// required: true missing for top 5
 				slug: { type: String, required: true },
+				id: { type: String, required: true },
 				name: { type: String, required: true },
-				quantity: { type: Number, required: true },
-				image: { type: String, required: true },
-				price: { type: Number, required: true },
-				product: {
-					type: mongoose.Schema.Types.ObjectId,
-					ref: 'Product',
-					required: true,
-				},
+				desc: { type: String },
+				cartQuantity: { type: Number },
+				image: { type: String },
+				price: { type: Number },
 			},
 		],
-		shippingAddress: {
-			fullName: { type: String, required: true },
-			address: { type: String, required: true },
-			city: { type: String, required: true },
-			zipCode: { type: String, required: true },
-			country: { type: String, required: true },
+		shipping: {
+			type: Object,
+			required: true,
 		},
-		paymentMethod: { type: String, required: true },
-		paymentResult: {
-			id: String,
-			status: String,
-			update_time: String,
-			email_address: String,
-		},
-		itemsPrice: { type: Number, required: true },
-		shippingPrice: { type: Number, required: true },
-		taxPrice: { type: Number, required: true },
-		totalPrice: { type: Number, required: true },
-		user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-		isPaid: { type: Boolean, default: false },
-		paidAt: { type: Date },
+		subtotal: { type: Number, required: true },
+		tax: { type: Number },
+		total: { type: Number, required: true },
 		isDelivered: { type: Boolean, default: false },
-		deliveredAt: { type: Date },
+		deliveryStatus: { type: String, default: 'Not delivered' },
+		paymentStatus: { type: String, required: true },
 	},
 
 	{

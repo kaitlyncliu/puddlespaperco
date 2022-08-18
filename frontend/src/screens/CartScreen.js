@@ -10,10 +10,35 @@ import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import axios from 'axios';
 import LoadingBox from '../Components/LoadingBox';
+import { useAuth0 } from '@auth0/auth0-react';
+import { toast } from 'react-toastify';
+import { getError } from '../util';
+
+const orderReducer = (state, action) => {
+	switch (action.type) {
+		case 'CREATE_REQUEST':
+			return { ...state, loading: true };
+		case 'CREATE_SUCCESS':
+			return { ...state, loading: false };
+		case 'CREATE_FAIL':
+			return { ...state, loading: false };
+		default:
+			return state;
+	}
+};
 
 export default function CartScreen() {
-	const navigate = useNavigate();
 	const { state, dispatch: ctxDispatch } = useContext(Store);
+	const [{ loading }, dispatch] = useReducer(orderReducer, {
+		loading: false,
+	});
+	const {
+		user,
+		loginWithRedirect,
+		isAuthenticated,
+		isLoading,
+		getAccessTokenSilently,
+	} = useAuth0();
 	const {
 		cart: { cartItems },
 	} = state;
@@ -31,8 +56,32 @@ export default function CartScreen() {
 		});
 	};
 
+	const submitStripeHandler = async (e) => {
+		dispatch({ type: 'CREATE_REQUEST' });
+		try {
+			const token = await getAccessTokenSilently();
+			const res = await axios.post(
+				'/api/stripe/create-checkout-session',
+				{
+					cartItems: cartItems,
+					userId: user.sub,
+				},
+				{
+					headers: {
+						Authorization: `Bearer ${token}`,
+					},
+				}
+			);
+			dispatch({ type: 'CREATE_SUCCESS' });
+			window.location.href = res.data.url;
+		} catch (err) {
+			dispatch({ type: 'CREATE_FAIL' });
+			toast.error(getError(err));
+		}
+	};
+
 	const checkoutHandler = () => {
-		navigate('/signin?redirect=/payment');
+		!isLoading & isAuthenticated ? submitStripeHandler() : loginWithRedirect();
 	};
 
 	const removeItemHandler = (item) => {

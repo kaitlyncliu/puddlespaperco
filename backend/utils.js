@@ -1,4 +1,7 @@
 import jwt from 'jsonwebtoken';
+import { expressjwt } from 'express-jwt';
+import jwks from 'jwks-rsa';
+import axios from 'axios';
 
 export const generateToken = (user) => {
 	return jwt.sign(
@@ -31,3 +34,15 @@ export const isAuth = (req, res, next) => {
 		res.status(401).send({ message: 'No Token' });
 	}
 };
+
+export const verifyJwt = expressjwt({
+	secret: jwks.expressJwtSecret({
+		cache: true,
+		rateLimit: true,
+		jwksRequestsPerMinute: 5,
+		jwksUri: 'https://dev-qmtahjgk.us.auth0.com/.well-known/jwks.json',
+	}),
+	audience: 'https://puddlesbackendapi',
+	issuer: 'https://dev-qmtahjgk.us.auth0.com/',
+	algorithms: ['RS256'],
+});

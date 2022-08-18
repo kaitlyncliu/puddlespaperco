@@ -9,6 +9,7 @@ import { useContext, useEffect, useState } from 'react';
 import { Store } from '../Store';
 import { toast } from 'react-toastify';
 import { getError } from '../util';
+import LoginButton from '../Components/Login';
 
 export default function SignInScreen() {
 	const navigate = useNavigate();
@@ -69,6 +70,9 @@ export default function SignInScreen() {
 				<div className="mb-3">
 					<Button type="submit">Sign In</Button>
 				</div>
+				<>
+					<LoginButton />
+				</>
 				<div className="mb-3">
 					New to PuddlesPaperCo?{' '}
 					<Link to={`/signup?redirect=${redirect}`}>Create an account</Link>

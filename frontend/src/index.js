@@ -6,18 +6,23 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { StoreProvider } from './Store';
-import { PayPalScriptProvider } from '@paypal/react-paypal-js';
+import { Auth0Provider } from '@auth0/auth0-react';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
 	<React.StrictMode>
-		<StoreProvider>
-			<HelmetProvider>
-				<PayPalScriptProvider deferLoading={true}>
+		<Auth0Provider
+			domain="dev-qmtahjgk.us.auth0.com"
+			clientId="Tu6Xif54ZvLYY3ji3TcnfiNmXmoPyzF0"
+			redirectUri={window.location.origin}
+			audience="https://puddlesbackendapi"
+		>
+			<StoreProvider>
+				<HelmetProvider>
 					<App />
-				</PayPalScriptProvider>
-			</HelmetProvider>
-		</StoreProvider>
+				</HelmetProvider>
+			</StoreProvider>
+		</Auth0Provider>
 	</React.StrictMode>
 );
 

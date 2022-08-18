@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { getError } from '../util';
 import axios from 'axios';
+import { useAuth0 } from '@auth0/auth0-react';
 import LoadingBox from '../Components/LoadingBox';
 
 const reducer = (state, action) => {
@@ -26,6 +27,7 @@ const reducer = (state, action) => {
 export default function PaymentMethodScreen() {
 	const navigate = useNavigate();
 	const { state, dispatch: ctxDispatch } = useContext(Store);
+	const { getAccessTokenSilently } = useAuth0();
 	const [{ loading }, dispatch] = useReducer(reducer, {
 		loading: false,
 	});
@@ -44,6 +46,7 @@ export default function PaymentMethodScreen() {
 	// }, [shippingAddress, navigate]);
 
 	const submitStripeHandler = async (e) => {
+		const token = getAccessTokenSilently();
 		e.preventDefault();
 		try {
 			dispatch({ type: 'CREATE_REQUEST' });
@@ -54,7 +57,7 @@ export default function PaymentMethodScreen() {
 				},
 				{
 					headers: {
-						authorization: `Bearer ${userInfo.token}`,
+						Authorization: `Bearer ${token}`,
 					},
 				}
 			);
