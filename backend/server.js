@@ -11,6 +11,7 @@ import userRouter from './routes/userRoutes.js';
 import orderRouter from './routes/orderRoutes.js';
 import { isAuth, verifyJwt } from './utils.js';
 import Product from './models/productModel.js';
+import stripeRouter from './routes/stripeRoutes.js';
 
 dotenv.config();
 
@@ -24,48 +25,18 @@ mongoose
 	});
 
 const app = express();
-const stripe = Stripe(process.env.STRIPE_PRIVATE_KEY);
 
-app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.options('/api/create-checkout-session', cors());
+app.options('/api/stripe/create-checkout-session', cors());
 app.use(
 	cors({
 		origin: true,
 		credentials: true,
 	})
 );
+app.use('/api/stripe', stripeRouter);
 
-app.get('/api/keys/paypal', (req, res) => {
-	res.send(process.env.PAYPAL_CLIENT_ID || 'sb');
-});
-
-app.post('/api/create-checkout-session', verifyJwt, async (req, res) => {
-	const cartItems = req.body.cartItems;
-
-	const listIds = cartItems.map((x) => x._id);
-	const idQuantity = new Map();
-	cartItems.map((x) => idQuantity.set(x._id, x.quantity));
-	const listItems = await Product.find({ _id: listIds });
-	const line_items_data = listItems.map((x) => ({
-		price_data: {
-			currency: 'usd',
-			product_data: {
-				name: x.name,
-			},
-			unit_amount: Math.round(x.price * 100),
-		},
-		quantity: idQuantity.get(x._id.valueOf()),
-	}));
-	const session = await stripe.checkout.sessions.create({
-		line_items: line_items_data,
-		mode: 'payment',
-		success_url: `${process.env.CLIENT_URL}/checkout-success`,
-		cancel_url: `${process.env.CLIENT_URL}/cart`,
-	});
-
-	res.json({ url: session.url });
-});
+app.use(express.json());
 
 app.use('/api/seed', seedRouter);
 app.use('/api/products', productRouter);

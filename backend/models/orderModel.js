@@ -2,35 +2,30 @@ import mongoose from 'mongoose';
 
 const orderSchema = new mongoose.Schema(
 	{
-		orderItems: [
+		userId: { type: String, required: true },
+		customerId: { type: String },
+		paymentIndentId: { type: String },
+		products: [
 			{
 				// required: true missing for top 5
-				slug: { type: String },
+				id: { type: String },
 				name: { type: String },
-				quantity: { type: Number },
+				desc: { type: String },
+				cartQuantity: { type: Number },
 				image: { type: String },
 				price: { type: Number },
-				product: {
-					type: mongoose.Schema.Types.ObjectId,
-					ref: 'Product',
-					required: true,
-				},
 			},
 		],
-		shippingAddress: {
-			fullName: { type: String, required: true },
-			address: { type: String, required: true },
-			city: { type: String, required: true },
-			zipCode: { type: String, required: true },
-			country: { type: String, required: true },
+		shipping: {
+			type: Object,
+			required: true,
 		},
-		itemsPrice: { type: Number, required: true },
-		shippingPrice: { type: Number, required: true },
-		taxPrice: { type: Number, required: true },
-		totalPrice: { type: Number, required: true },
-		user: { type: String, ref: 'User', required: true },
+		subtotal: { type: Number, required: true },
+		tax: { type: Number },
+		total: { type: Number, required: true },
 		isDelivered: { type: Boolean, default: false },
-		deliveredAt: { type: Date },
+		deliveryStatus: { type: Date },
+		paymentStatus: { type: String, required: true },
 	},
 
 	{

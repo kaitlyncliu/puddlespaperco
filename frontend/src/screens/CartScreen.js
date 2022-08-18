@@ -28,12 +28,12 @@ const orderReducer = (state, action) => {
 };
 
 export default function CartScreen() {
-	const navigate = useNavigate();
 	const { state, dispatch: ctxDispatch } = useContext(Store);
 	const [{ loading }, dispatch] = useReducer(orderReducer, {
 		loading: false,
 	});
 	const {
+		user,
 		loginWithRedirect,
 		isAuthenticated,
 		isLoading,
@@ -61,9 +61,10 @@ export default function CartScreen() {
 		try {
 			const token = await getAccessTokenSilently();
 			const res = await axios.post(
-				'/api/create-checkout-session',
+				'/api/stripe/create-checkout-session',
 				{
 					cartItems: cartItems,
+					userId: user.sub,
 				},
 				{
 					headers: {
