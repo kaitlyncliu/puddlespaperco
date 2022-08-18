@@ -7,33 +7,13 @@ import mongoose from 'mongoose';
 
 const orderRouter = express.Router();
 
-orderRouter.post(
-	'/',
-	verifyJwt,
-	expressAsyncHandler(async (req, res) => {
-		const newOrder = new Order({
-			orderItems: req.body.orderItems.map((x) => ({ ...x, product: x._id })),
-			shippingAddress: req.body.shippingAddress,
-			itemsPrice: req.body.itemsPrice,
-			shippingPrice: req.body.shippingPrice,
-			taxPrice: req.body.taxPrice,
-			totalPrice: req.body.totalPrice,
-			user: req.user._id,
-		});
-
-		const order = await newOrder.save();
-		res.status(201).send({ message: 'New Order Created', order });
-	})
-);
-
 orderRouter.get(
 	'/mine',
 	verifyJwt,
 	expressAsyncHandler(async (req, res) => {
 		const orders = await Order.find({
-			user: req.query._id,
+			userId: req.query.userId,
 		});
-		console.log(orders);
 		res.send(orders);
 	})
 );

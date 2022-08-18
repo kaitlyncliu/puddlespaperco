@@ -23,7 +23,6 @@ stripeRouter.post(
 			},
 		});
 
-		console.log(req.body);
 		const listIds = cartItems.map((x) => x._id);
 		const idQuantity = new Map();
 		cartItems.map((x) => idQuantity.set(x._id, x.quantity));
@@ -100,7 +99,7 @@ stripeRouter.post(
 const createOrder = async (customer, data) => {
 	const Items = JSON.parse(customer.metadata.cart);
 	const newOrder = new Order({
-		userId: customer.metadata.userId,
+		userId: JSON.parse(customer.metadata.userId),
 		customerId: data.customer,
 		paymentIntentId: data.payment_intent,
 		products: Items,
@@ -112,7 +111,6 @@ const createOrder = async (customer, data) => {
 
 	try {
 		const savedOrder = await newOrder.save();
-		console.log('Processed order: ', savedOrder);
 	} catch (err) {
 		console.log(err);
 	}
@@ -141,7 +139,6 @@ stripeRouter.post(
 		// Handle the event
 		switch (event.type) {
 			case 'checkout.session.completed':
-				console.log('checkout done');
 				stripe.customers
 					.retrieve(data.customer)
 					.then((customer) => {
@@ -151,7 +148,7 @@ stripeRouter.post(
 				break;
 			// ... handle other event types
 			default:
-				console.log(`Unhandled event type ${event.type}`);
+				break;
 		}
 
 		res.json({ received: true });

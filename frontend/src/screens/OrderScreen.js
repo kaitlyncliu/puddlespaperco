@@ -37,45 +37,36 @@ function reducer(state, action) {
 }
 
 export default function OrderScreen() {
-	const navigate = useNavigate();
 	const params = useParams();
-	const { user, getAccessTokenSilently, loginWithRedirect } = useAuth0();
+	const { getAccessTokenSilently, loginWithRedirect } = useAuth0();
 	const { id: orderId } = params;
 	const [{ loading, error, order }, dispatch] = useReducer(reducer, {
 		loading: true,
 		order: {},
 		error: '',
-		successPay: false,
-		loadingPay: false,
 	});
 
 	useEffect(() => {
 		const fetchOrder = async () => {
+			dispatch({ type: 'FETCH_REQUEST' });
 			try {
-				dispatch({ type: 'FETCH_REQUEST' });
 				const token = await getAccessTokenSilently();
 				const { data } = await axios.get(`/api/orders/${orderId}`, {
 					headers: { authorization: `Bearer ${token}` },
 				});
 				dispatch({ type: 'FETCH_SUCCESS', payload: data });
+				console.log(data);
 			} catch (err) {
 				dispatch({ type: 'FETCH_FAIL', payload: getError(err) });
 				toast.error(getError(err));
 			}
 		};
-		if (!user) {
-			loginWithRedirect();
-		} else {
-			fetchOrder();
-		}
-	}, [
-		order,
-		user,
-		orderId,
-		navigate,
-		loginWithRedirect,
-		getAccessTokenSilently,
-	]);
+		// if (!user) {
+		// 	loginWithRedirect();
+		// } else {
+		fetchOrder();
+		// }
+	}, [orderId, getAccessTokenSilently]);
 
 	return loading ? (
 		<LoadingBox></LoadingBox>
@@ -93,14 +84,18 @@ export default function OrderScreen() {
 						<Card.Body>
 							<Card.Title>Shipping</Card.Title>
 							<Card.Text>
-								<strong>Name: </strong> {order.shippingAddress.fullName} <br />
-								<strong>Address: </strong> {order.shippingAddress.address},
-								{order.shippingAddress.city}, {order.shippingAddress.zipCode},
-								{order.shippingAddress.country}
+								<strong>Name: </strong> {order.shipping.name} <br />
+								<strong>Address: </strong> {order.shipping.address.line1},{'\n'}
+								{order.shipping.address.line2
+									? `{order.shipping.address.line2},\n`
+									: ''}
+								{order.shipping.address.city},{' '}
+								{order.shipping.address.postal_code},{'\n'}
+								{order.shipping.address.country}
 							</Card.Text>
 							{order.isDelivered ? (
 								<MessageBox variant="success">
-									Delivered at {order.deliveredAt}
+									{order.deliveryStatus}
 								</MessageBox>
 							) : (
 								<MessageBox variant="danger">Not delivered</MessageBox>
@@ -113,10 +108,8 @@ export default function OrderScreen() {
 							<Card.Text>
 								<strong>Method: </strong> {order.paymentMethod}
 							</Card.Text>
-							{order.isPaid ? (
-								<MessageBox variant="success">
-									Paid at {order.paidAt}
-								</MessageBox>
+							{order.paymentStatus ? (
+								<MessageBox variant="success">Paid</MessageBox>
 							) : (
 								<MessageBox variant="danger">Not Paid</MessageBox>
 							)}
@@ -126,7 +119,7 @@ export default function OrderScreen() {
 						<Card.Body>
 							<Card.Title>Your Order:</Card.Title>
 							<ListGroup variant="flush">
-								{order.orderItems.map((item) => (
+								{order.products.map((item) => (
 									<ListGroup.Item key={item._id}>
 										<Row className="align-items-center">
 											<Col md={6}>
@@ -156,27 +149,27 @@ export default function OrderScreen() {
 								<ListGroup.Item>
 									<Row>
 										<Col>Items</Col>
-										<Col>${order.itemsPrice.toFixed(2)}</Col>
+										<Col>${(order.subtotal / 100).toFixed(2)}</Col>
 									</Row>
 								</ListGroup.Item>
-								<ListGroup.Item>
+								{/* <ListGroup.Item>
 									<Row>
 										<Col>Shipping</Col>
 										<Col>${order.shippingPrice.toFixed(2)}</Col>
 									</Row>
-								</ListGroup.Item>
-								<ListGroup.Item>
+								</ListGroup.Item> 
+								 <ListGroup.Item>
 									<Row>
 										<Col>Tax</Col>
 										<Col>${order.taxPrice.toFixed(2)}</Col>
 									</Row>
-								</ListGroup.Item>
+								</ListGroup.Item>  */}
 								<ListGroup.Item>
 									<Row>
 										<Col>
 											<b>Order Total</b>
 										</Col>
-										<Col>${order.totalPrice.toFixed(2)}</Col>
+										<Col>${(order.total / 100).toFixed(2)}</Col>
 									</Row>
 								</ListGroup.Item>
 							</ListGroup>

@@ -1,11 +1,10 @@
 import axios from 'axios';
-import React, { useContext, useEffect, useReducer } from 'react';
+import React, { useEffect, useReducer } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router-dom';
 import LoadingBox from '../Components/LoadingBox';
 import MessageBox from '../Components/MessageBox';
 import Button from 'react-bootstrap/Button';
-import { Store } from '../Store';
 import { getError } from '../util';
 import { useAuth0 } from '@auth0/auth0-react';
 
@@ -23,8 +22,6 @@ const reducer = (state, action) => {
 };
 
 export default function OrderHistoryScreen() {
-	const { state } = useContext(Store);
-	const { userInfo } = state;
 	const navigate = useNavigate();
 	const { getAccessTokenSilently, user } = useAuth0();
 
@@ -52,7 +49,7 @@ export default function OrderHistoryScreen() {
 			}
 		};
 		fetchData();
-	}, [userInfo, getAccessTokenSilently, user.sub]);
+	}, [getAccessTokenSilently, user.sub]);
 	return (
 		<div>
 			<Helmet>
@@ -80,11 +77,14 @@ export default function OrderHistoryScreen() {
 							<tr key={order._id}>
 								<td>{order._id}</td>
 								<td>{order.createdAt.substring(0, 10)}</td>
-								<td>{order.totalPrice.toFixed(2)}</td>
 								<td>
-									{order.isDelivered
-										? order.deliveredAt.substring(0, 10)
-										: 'No'}
+									{(order.total / 100).toLocaleString('en-US', {
+										style: 'currency',
+										currency: 'USD',
+									})}
+								</td>
+								<td>
+									{order.isDelivered ? order.deliveryStatus : 'Not delivered'}
 								</td>
 								<td>
 									<Button

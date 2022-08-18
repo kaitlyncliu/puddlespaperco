@@ -4,12 +4,13 @@ const orderSchema = new mongoose.Schema(
 	{
 		userId: { type: String, required: true },
 		customerId: { type: String },
-		paymentIndentId: { type: String },
+		paymentIntentId: { type: String },
 		products: [
 			{
 				// required: true missing for top 5
-				id: { type: String },
-				name: { type: String },
+				slug: { type: String, required: true },
+				id: { type: String, required: true },
+				name: { type: String, required: true },
 				desc: { type: String },
 				cartQuantity: { type: Number },
 				image: { type: String },
@@ -24,7 +25,7 @@ const orderSchema = new mongoose.Schema(
 		tax: { type: Number },
 		total: { type: Number, required: true },
 		isDelivered: { type: Boolean, default: false },
-		deliveryStatus: { type: Date },
+		deliveryStatus: { type: String, default: 'Not delivered' },
 		paymentStatus: { type: String, required: true },
 	},
 
