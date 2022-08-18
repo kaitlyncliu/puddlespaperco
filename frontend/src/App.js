@@ -9,14 +9,8 @@ import { useContext, useEffect, useState } from 'react';
 import HomeScreen from './screens/HomeScreen';
 import ProductScreen from './screens/ProductScreen';
 import CartScreen from './screens/CartScreen';
-import SignInScreen from './screens/SignInScreen';
-import ShippingScreen from './screens/ShippingScreen';
-import SignUpScreen from './screens/SignUpScreen';
-import PaymentMethodScreen from './screens/PaymentMethodScreen';
-import PlaceOrderScreen from './screens/PlaceOrderScreen';
 import OrderScreen from './screens/OrderScreen';
 import OrderHistoryScreen from './screens/OrderHistoryScreen';
-import ProfileScreen from './screens/ProfileScreen';
 import CheckoutSuccessScreen from './screens/CheckoutSuccessScreen';
 import SearchScreen from './screens/SearchScreen';
 // Bootstrap
@@ -30,13 +24,11 @@ import { LinkContainer } from 'react-router-bootstrap';
 // Components
 import SearchBar from './Components/SearchBar';
 import ProtectedRoute from './Components/ProtectedRoute';
-import LogoutButton from './Components/Logout';
 import { useAuth0 } from '@auth0/auth0-react';
-import LoadingBox from './Components/LoadingBox';
 
 function App() {
 	const { state, dispatch: ctxDispatch } = useContext(Store);
-	const { cart, userInfo } = state;
+	const { cart } = state;
 	const { loginWithRedirect, logout, user, isAuthenticated, isLoading } =
 		useAuth0();
 
@@ -169,9 +161,6 @@ function App() {
 							<Route path="/product/:slug" element={<ProductScreen />} />
 							<Route path="/" element={<HomeScreen />} />
 							<Route path="/cart" element={<CartScreen />} />
-							<Route path="/signin" element={<SignInScreen />} />
-							<Route path="/shipping" element={<ShippingScreen />} />
-							<Route path="/signup" element={<SignUpScreen />} />
 							<Route
 								path="/order/:id"
 								element={
