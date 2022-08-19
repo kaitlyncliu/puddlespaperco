@@ -16,17 +16,21 @@ stripeRouter.post(
 	async (req, res) => {
 		const cartItems = req.body.cartItems;
 
-		const customer = await stripe.customers.create({
-			metadata: {
-				userId: JSON.stringify(req.body.userId),
-				cart: JSON.stringify(req.body.cartItems),
-			},
-		});
-
 		const listIds = cartItems.map((x) => x._id);
 		const idQuantity = new Map();
 		cartItems.map((x) => idQuantity.set(x._id, x.quantity));
 		const listItems = await Product.find({ _id: listIds });
+
+		const cartIds = listItems.map((x) => {
+			const cartObject = {
+				_id: x._id.toString(),
+				quantity: idQuantity.get(x._id.valueOf()),
+				price: x.price,
+			};
+			return cartObject;
+		});
+		console.log(cartIds);
+
 		const line_items_data = listItems.map((x) => ({
 			price_data: {
 				currency: 'usd',
@@ -37,6 +41,14 @@ stripeRouter.post(
 			},
 			quantity: idQuantity.get(x._id.valueOf()),
 		}));
+
+		const customer = await stripe.customers.create({
+			metadata: {
+				userId: JSON.stringify(req.body.userId),
+				cart: JSON.stringify(cartIds),
+			},
+		});
+
 		const session = await stripe.checkout.sessions.create({
 			customer: customer.id,
 			shipping_address_collection: {

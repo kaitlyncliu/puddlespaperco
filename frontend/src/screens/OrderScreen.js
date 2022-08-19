@@ -26,7 +26,8 @@ function reducer(state, action) {
 				...state,
 				loading: false,
 				error: '',
-				order: action.payload,
+				order: action.payload.order,
+				products: action.payload.products,
 			};
 		case 'FETCH_FAIL':
 			return { ...state, loading: false, error: action.payload };
@@ -38,12 +39,13 @@ function reducer(state, action) {
 
 export default function OrderScreen() {
 	const params = useParams();
-	const { getAccessTokenSilently, loginWithRedirect } = useAuth0();
+	const { getAccessTokenSilently } = useAuth0();
 	const { id: orderId } = params;
-	const [{ loading, error, order }, dispatch] = useReducer(reducer, {
+	const [{ loading, error, order, products }, dispatch] = useReducer(reducer, {
 		loading: true,
 		order: {},
 		error: '',
+		products: [],
 	});
 
 	useEffect(() => {
@@ -119,16 +121,18 @@ export default function OrderScreen() {
 						<Card.Body>
 							<Card.Title>Your Order:</Card.Title>
 							<ListGroup variant="flush">
-								{order.products.map((item) => (
+								{products.map((item) => (
 									<ListGroup.Item key={item._id}>
 										<Row className="align-items-center">
 											<Col md={6}>
 												<img
-													src={item.image}
-													alt={item.name}
+													src={item.object.image}
+													alt={item.object.name}
 													className="img-fluid rounded img-thumbnail"
 												></img>{' '}
-												<Link to={`/product/${item.slug}`}>{item.name}</Link>
+												<Link to={`/product/${item.object.slug}`}>
+													{item.object.name}
+												</Link>
 											</Col>
 											<Col md={3}>
 												<span>{item.quantity}</span>

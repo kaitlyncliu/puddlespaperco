@@ -8,13 +8,9 @@ const orderSchema = new mongoose.Schema(
 		products: [
 			{
 				// required: true missing for top 5
-				slug: { type: String, required: true },
-				id: { type: String, required: true },
-				name: { type: String, required: true },
-				desc: { type: String },
-				cartQuantity: { type: Number },
-				image: { type: String },
-				price: { type: Number },
+				_id: { type: String, required: true },
+				quantity: { type: Number, required: true },
+				price: { type: Number, required: true },
 			},
 		],
 		shipping: {
