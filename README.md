@@ -10,9 +10,11 @@ Visit https://puddlespaperco.herokuapp.com/ for a live demo of this E-Commerce s
 * NodeJS
 * Express
 * MongoDB
+* Auth0
+* Stripe API
 
 ## Features
-* Integration with the Stripe API and PayPal API to allow for secure transactions
-* User authentication and encrypted passwords
+* Integration with the Stripe API to allow for secure transactions and use of Stripe webhook to sync Stripe checkouts with database data
+* User authentication and encrypted passwords through Auth0
 * User accounts that allow order history and order statuses to be tracked and login and signup pages
 * Search functions and filtering to search for specific products
