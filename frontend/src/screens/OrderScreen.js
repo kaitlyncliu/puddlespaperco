@@ -1,7 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useReducer } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import LoadingBox from '../Components/LoadingBox';
 import MessageBox from '../Components/MessageBox';
 import { getError } from '../util';
@@ -57,17 +57,12 @@ export default function OrderScreen() {
 					headers: { authorization: `Bearer ${token}` },
 				});
 				dispatch({ type: 'FETCH_SUCCESS', payload: data });
-				console.log(data);
 			} catch (err) {
 				dispatch({ type: 'FETCH_FAIL', payload: getError(err) });
 				toast.error(getError(err));
 			}
 		};
-		// if (!user) {
-		// 	loginWithRedirect();
-		// } else {
 		fetchOrder();
-		// }
 	}, [orderId, getAccessTokenSilently]);
 
 	return loading ? (

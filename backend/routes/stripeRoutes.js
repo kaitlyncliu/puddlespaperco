@@ -29,7 +29,6 @@ stripeRouter.post(
 			};
 			return cartObject;
 		});
-		console.log(cartIds);
 
 		const line_items_data = listItems.map((x) => ({
 			price_data: {
