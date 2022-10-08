@@ -29,11 +29,11 @@ function Product(props) {
 	};
 
 	return (
-		<Card>
+		<Card className="h-100">
 			<Link to={`/product/${product.slug}`}>
 				<img src={product.image} className="card-img-top" alt={product.name} />
 			</Link>
-			<Card.Body>
+			<Card.Body className="d-flex flex-column">
 				<Link to={`/product/${product.slug}`}>
 					<Card.Title>{product.name}</Card.Title>
 				</Link>
@@ -44,7 +44,13 @@ function Product(props) {
 						Out of Stock
 					</Button>
 				) : (
-					<Button onClick={() => addToCartHandler(product)}>Add to cart</Button>
+					<Button
+						className="mt-auto mx-auto 
+				}w-75"
+						onClick={() => addToCartHandler(product)}
+					>
+						Add to cart
+					</Button>
 				)}
 			</Card.Body>
 		</Card>
