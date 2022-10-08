@@ -49,7 +49,7 @@ function HomeScreen() {
 			<h1>Featured Products</h1>
 			<div className="products">
 				{loading ? (
-					<LoadingBox />
+					<img src="/images/loadingGif.gif" alt="my-gif" />
 				) : error ? (
 					<MessageBox variant="danger">{error}</MessageBox>
 				) : (
