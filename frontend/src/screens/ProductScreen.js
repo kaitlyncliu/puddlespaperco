@@ -82,7 +82,7 @@ function ProductScreen() {
 						{product.images.map((image) => (
 							<Carousel.Item key={image}>
 								<img
-									className="d-block w-100"
+									className="d-block w-100 rounded-3"
 									src={image}
 									alt={product.name}
 								></img>
