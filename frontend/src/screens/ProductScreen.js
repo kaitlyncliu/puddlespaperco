@@ -5,6 +5,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Rating from '../Components/Rating';
 import ListGroup from 'react-bootstrap/ListGroup';
+import Carousel from 'react-bootstrap/Carousel';
 import Card from 'react-bootstrap/Card';
 import Badge from 'react-bootstrap/Badge';
 import Button from 'react-bootstrap/Button';
@@ -77,11 +78,17 @@ function ProductScreen() {
 		<div>
 			<Row>
 				<Col md={6}>
-					<img
-						className="img-large"
-						src={product.image}
-						alt={product.name}
-					></img>
+					<Carousel>
+						{product.images.map((image) => (
+							<Carousel.Item key={image}>
+								<img
+									className="d-block w-100"
+									src={image}
+									alt={product.name}
+								></img>
+							</Carousel.Item>
+						))}
+					</Carousel>
 				</Col>
 				<Col md={3}>
 					<ListGroup variant="flush">
