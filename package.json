@@ -3,7 +3,6 @@
 	"description": "This is a storefront for my small business PuddlesPaperCo.",
 	"version": "1.0.0",
 	"main": "index.js",
-	"devDependencies": {},
 	"scripts": {
 		"build": "cd backend && npm install && cd ../frontend && npm install && npm run build",
 		"start": "node backend/server.js",
