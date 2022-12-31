@@ -10,12 +10,12 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/kaitlyncliu/ecommerce.git"
+		"url": "git+https://github.com/kaitlyncliu/puddlespaperco.git"
 	},
 	"author": "",
 	"license": "ISC",
 	"bugs": {
-		"url": "https://github.com/kaitlyncliu/ecommerce/issues"
+		"url": "https://github.com/kaitlyncliu/puddlespaperco/issues"
 	},
-	"homepage": "https://github.com/kaitlyncliu/ecommerce#readme"
+	"homepage": "https://github.com/kaitlyncliu/puddlespaperco#readme"
 }
