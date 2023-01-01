@@ -27,6 +27,7 @@ import ProtectedRoute from './Components/ProtectedRoute';
 import { useAuth0 } from '@auth0/auth0-react';
 import DashboardScreen from './screens/DashboardScreen';
 import ProductEditScreen from './screens/ProductEditScreen';
+import ManageOrderScreen from './screens/ManageOrdersScreen';
 
 function App() {
 	const { state, dispatch: ctxDispatch } = useContext(Store);
@@ -72,7 +73,7 @@ function App() {
 								variant="dark"
 								onClick={() => setSidebarIsOpen(!sidebarIsOpen)}
 							>
-								<i className="fas fa-bars"></i>
+								<i className="fas fa-bars" style={{ color: 'white' }}></i>
 							</Button>
 							<LinkContainer to="/">
 								<Navbar.Brand className="p-2">PuddlesPaperCo</Navbar.Brand>
@@ -187,6 +188,14 @@ function App() {
 								element={
 									<ProtectedRoute>
 										<ProductEditScreen />
+									</ProtectedRoute>
+								}
+							/>
+							<Route
+								path="/manageOrders"
+								element={
+									<ProtectedRoute>
+										<ManageOrderScreen></ManageOrderScreen>
 									</ProtectedRoute>
 								}
 							/>

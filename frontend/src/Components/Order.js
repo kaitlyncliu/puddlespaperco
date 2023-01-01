@@ -1,5 +1,5 @@
 import React from 'react';
 
-export default function ManageOrderScreen() {
+export default function Order() {
 	return <div></div>;
 }

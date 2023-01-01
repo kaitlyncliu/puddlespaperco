@@ -17,6 +17,15 @@ main {
 
 a {
 	text-decoration: none;
+	color: #495057;
+}
+a:hover {
+	color: #212529;
+}
+
+.fas,
+.fa {
+	color: #343a40;
 }
 
 .btn-primary,

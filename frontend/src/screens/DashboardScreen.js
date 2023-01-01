@@ -1,6 +1,7 @@
 import React from 'react';
 import Row from 'react-bootstrap/Row';
 import Card from 'react-bootstrap/Card';
+import { Link } from 'react-router-dom';
 import CardGroup from 'react-bootstrap/CardGroup';
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
@@ -14,7 +15,43 @@ export default function DashboardScreen() {
 				<title>Dashboard</title>
 			</Helmet>
 			<Row>
-				<Col md={4}></Col>
+				<Col md={4}>
+					<h3 className="p-3">Manage Shop</h3>
+					<Card>
+						<Row className="no-gutters">
+							<Col md={4}>
+								<i className="fas fa-shapes fa-2x p-4"></i>
+							</Col>
+							<Col md={8} className="my-auto">
+								<Link to="/editProducts">
+									<p
+										className="text-center mb-0"
+										style={{ fontSize: '1.25em' }}
+									>
+										Products
+									</p>
+								</Link>
+							</Col>
+						</Row>
+					</Card>
+					<Card>
+						<Row className="no-gutters">
+							<Col md={4}>
+								<i className="fas fa-shopping-basket fa-2x p-4"></i>
+							</Col>
+							<Col md={8} className="my-auto">
+								<Link to="/manageOrders">
+									<p
+										className="text-center mb-0"
+										style={{ fontSize: '1.25em' }}
+									>
+										Orders
+									</p>
+								</Link>
+							</Col>
+						</Row>
+					</Card>
+				</Col>
 				<Col md={8}>
 					<Row>
 						<h1 className="p-3">Summary</h1>
