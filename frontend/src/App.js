@@ -25,13 +25,14 @@ import { LinkContainer } from 'react-router-bootstrap';
 import SearchBar from './Components/SearchBar';
 import ProtectedRoute from './Components/ProtectedRoute';
 import { useAuth0 } from '@auth0/auth0-react';
+import DashboardScreen from './screens/DashboardScreen';
+import ProductEditScreen from './screens/ProductEditScreen';
 
 function App() {
 	const { state, dispatch: ctxDispatch } = useContext(Store);
 	const { cart } = state;
 	const { loginWithRedirect, logout, user, isAuthenticated, isLoading } =
 		useAuth0();
-
 	const signOutHandler = () => {
 		ctxDispatch({ type: 'USER_SIGNOUT' });
 		localStorage.removeItem('userInfo');
@@ -42,7 +43,6 @@ function App() {
 
 	const [sidebarIsOpen, setSidebarIsOpen] = useState(false);
 	const [categories, setCategories] = useState([]);
-
 	useEffect(() => {
 		const fetchCategories = async () => {
 			try {
@@ -110,27 +110,19 @@ function App() {
 											Sign In
 										</Nav.Link>
 									)}
-									{/* {userInfo && userInfo.isAdmin && (
+									{isAuthenticated && user.isAdmin && (
 										<NavDropdown title="Admin" id="admin-nav-dropdown">
 											<LinkContainer to="/dashboard">
 												<NavDropdown.Item>Dashboard</NavDropdown.Item>
 											</LinkContainer>
-											<LinkContainer to="/productList">
-												<NavDropdown.Item>Products</NavDropdown.Item>
-											</LinkContainer>
-											<LinkContainer to="/orderList">
-												<NavDropdown.Item>Orders</NavDropdown.Item>
-											</LinkContainer>
-											<LinkContainer to="/userList">
-												<NavDropdown.Item>Users</NavDropdown.Item>
-											</LinkContainer>
 										</NavDropdown>
-									)} */}
+									)}
 								</Nav>
 							</Navbar.Collapse>
 						</Container>
 					</Navbar>
 				</header>
+
 				<div
 					className={
 						sidebarIsOpen
@@ -158,8 +150,8 @@ function App() {
 				<main>
 					<Container className="mt-3">
 						<Routes>
-							<Route path="/product/:slug" element={<ProductScreen />} />
 							<Route path="/" element={<HomeScreen />} />
+							<Route path="/product/:slug" element={<ProductScreen />} />
 							<Route path="/cart" element={<CartScreen />} />
 							<Route
 								path="/order/:id"
@@ -181,6 +173,22 @@ function App() {
 							<Route
 								path="/checkout-success"
 								element={<CheckoutSuccessScreen />}
+							/>
+							<Route
+								path="/dashboard"
+								element={
+									<ProtectedRoute>
+										<DashboardScreen />
+									</ProtectedRoute>
+								}
+							/>
+							<Route
+								path="/editProduct/:slug"
+								element={
+									<ProtectedRoute>
+										<ProductEditScreen />
+									</ProtectedRoute>
+								}
 							/>
 						</Routes>
 					</Container>
