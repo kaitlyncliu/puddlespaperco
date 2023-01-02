@@ -20,6 +20,24 @@ orderRouter.get(
 );
 
 orderRouter.get(
+	'/pending',
+	verifyJwt,
+	expressAsyncHandler(async (req, res) => {
+		const orders = await Order.find({ isDelivered: false });
+		res.send(orders);
+	})
+);
+
+orderRouter.get(
+	'/complete',
+	verifyJwt,
+	expressAsyncHandler(async (req, res) => {
+		const orders = await Order.find({ isDelivered: true });
+		res.send(orders);
+	})
+);
+
+orderRouter.get(
 	'/:id',
 	verifyJwt,
 	expressAsyncHandler(async (req, res) => {

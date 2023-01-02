@@ -65,11 +65,11 @@ export default function OrderHistoryScreen() {
 				<table className="table">
 					<thead>
 						<tr>
-							<th>ID</th>
-							<th>DATE</th>
-							<th>TOTAL</th>
-							<th>DELIVERED</th>
-							<th>ACTIONS</th>
+							<th>Order ID</th>
+							<th>Date</th>
+							<th>Total</th>
+							<th>Status</th>
+							<th>Actions</th>
 						</tr>
 					</thead>
 					<tbody>

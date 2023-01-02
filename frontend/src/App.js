@@ -203,7 +203,10 @@ function App() {
 					</Container>
 				</main>
 				<footer>
-					<div className="text-center">All rights reserved</div>
+					<div className="text-center">© 2023 Kaitlyn Liu</div>
+					<p className="text-center" style={{ fontSize: '0.75rem' }}>
+						All rights reserved.
+					</p>
 				</footer>
 			</div>
 		</BrowserRouter>

@@ -2,11 +2,10 @@ import React from 'react';
 import Row from 'react-bootstrap/Row';
 import Card from 'react-bootstrap/Card';
 import { Link } from 'react-router-dom';
-import CardGroup from 'react-bootstrap/CardGroup';
-import Tab from 'react-bootstrap/Tab';
-import Tabs from 'react-bootstrap/Tabs';
+import ListGroup from 'react-bootstrap/ListGroup';
 import Col from 'react-bootstrap/Col';
 import { Helmet } from 'react-helmet-async';
+import Order from '../Components/Order';
 
 export default function DashboardScreen() {
 	return (
@@ -23,7 +22,7 @@ export default function DashboardScreen() {
 								<i className="fas fa-shapes fa-2x p-4"></i>
 							</Col>
 							<Col md={8} className="my-auto">
-								<Link to="/editProducts">
+								<Link to="/editProduct">
 									<p
 										className="text-center mb-0"
 										style={{ fontSize: '1.25em' }}
@@ -54,7 +53,7 @@ export default function DashboardScreen() {
 				</Col>
 				<Col md={8}>
 					<Row>
-						<h1 className="p-3">Summary</h1>
+						<h1 className="p-3">Shop Summary</h1>
 						<Col>
 							<Card className="align-items-center">
 								<Card.Body>
@@ -82,6 +81,13 @@ export default function DashboardScreen() {
 								</Card.Body>
 							</Card>
 						</Col>
+					</Row>
+					<Row>
+						<h1 className="p-3">Recent Orders</h1>
+						<ListGroup>
+							{/* <Order></Order>
+							<Order></Order> */}
+						</ListGroup>
 					</Row>
 				</Col>
 			</Row>
