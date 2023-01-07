@@ -4,7 +4,7 @@ import Rating from './Rating';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/esm/Button';
 import Carousel from 'react-bootstrap/Carousel';
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Row from 'react-bootstrap/esm/Row';
 import Col from 'react-bootstrap/esm/Col';
 import Form from 'react-bootstrap/Form';
@@ -24,13 +24,14 @@ function ProductEdit(props) {
 	const [itemCount, setItemCount] = useState(product.countInStock);
 	const [itemImages, setItemImages] = useState(product.images);
 	const [imageIndex, setImageIndex] = useState(0);
+	const [imageFiles, setImageFiles] = useState([]);
 
-	const maxFiles = 5;
 	const handleShow = () => setShow(true);
 	const handleClose = () => setShow(false);
 	const handleSelect = (selectedIndex, e) => {
 		setImageIndex(selectedIndex);
 	};
+
 	const handleSave = async (e) => {
 		e.preventDefault();
 		try {
@@ -49,6 +50,19 @@ function ProductEdit(props) {
 		}
 	};
 
+	useEffect(() => {
+		if (imageFiles.length < 1) return;
+		const newImageURLs = [];
+		imageFiles.forEach((image) =>
+			newImageURLs.push(URL.createObjectURL(image))
+		);
+		setItemImages((prevImages) => [...prevImages, ...newImageURLs]);
+	}, [imageFiles]);
+
+	const handleImageChange = (e) => {
+		setImageFiles([...e.target.files]);
+	};
+
 	const handleOnDragEnd = (result) => {
 		if (!result.destination) return;
 
@@ -61,6 +75,7 @@ function ProductEdit(props) {
 		//Updating the list
 		setItemImages(items);
 	};
+	console.log(itemImages);
 
 	return (
 		<>
@@ -118,16 +133,21 @@ function ProductEdit(props) {
 									</Carousel>
 									<Form.Group className="mb-3">
 										<Form.Label>Upload product images</Form.Label>
-										<Form.Control type="file" multiple />
+										<Form.Control
+											type="file"
+											multiple
+											accept="image/*"
+											onChange={handleImageChange}
+										/>
 									</Form.Group>
-
+									<p>Reorder Images</p>
 									<Droppable
 										droppableId="editImagesDroppable"
 										direction="horizontal"
 									>
 										{(provided) => (
 											<Row
-												className="editImages"
+												className="editImages p-2"
 												{...provided.droppableProps}
 												ref={provided.innerRef}
 											>
@@ -162,6 +182,7 @@ function ProductEdit(props) {
 							<Col md={6}>
 								<h2>Product Details</h2>
 								<Form.Group className="mb-3">
+									<Form.Label>Product Name</Form.Label>
 									<Form.Control
 										type="text"
 										size="md"
@@ -171,6 +192,7 @@ function ProductEdit(props) {
 									></Form.Control>
 								</Form.Group>
 								<Form.Group className="mb-3">
+									<Form.Label>Price ($)</Form.Label>
 									<Form.Control
 										min="0.01"
 										step="0.01"
@@ -182,6 +204,7 @@ function ProductEdit(props) {
 									></Form.Control>
 								</Form.Group>
 								<Form.Group className="mb-3">
+									<Form.Label>Quantity</Form.Label>
 									<Form.Control
 										min="0"
 										step="1"
@@ -193,6 +216,7 @@ function ProductEdit(props) {
 									></Form.Control>
 								</Form.Group>
 								<Form.Group className="mb-3">
+									<Form.Label>Description</Form.Label>
 									<Form.Control
 										as="textarea"
 										size="sm"

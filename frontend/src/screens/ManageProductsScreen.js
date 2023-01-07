@@ -50,7 +50,7 @@ export default function ManageProductsScreen() {
 	const [itemDescription, setItemDescription] = useState();
 	const [itemCount, setItemCount] = useState();
 	const [itemSlug, setItemSlug] = useState();
-	const [itemImages, setItemImages] = useState();
+	const [itemImages, setItemImages] = useState([]);
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -70,6 +70,7 @@ export default function ManageProductsScreen() {
 		fetchData();
 	}, []);
 
+	const maxFiles = 5;
 	const handleShow = () => setShow(true);
 	const handleClose = () => setShow(false);
 	const handleSave = async (e) => {
