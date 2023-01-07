@@ -2,14 +2,13 @@ import express, { application } from 'express';
 import path from 'path';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import Stripe from 'stripe';
+import multer from 'multer';
 import cors from 'cors';
 
 import seedRouter from './routes/seedRoutes.js';
 import productRouter from './routes/productRoutes.js';
 import userRouter from './routes/userRoutes.js';
 import orderRouter from './routes/orderRoutes.js';
-import { isAuth, verifyJwt } from './utils.js';
 import Product from './models/productModel.js';
 import stripeRouter from './routes/stripeRoutes.js';
 
@@ -25,6 +24,7 @@ mongoose
 	});
 
 const app = express();
+const upload = multer({ dest: '../frontend/public/images/' });
 
 app.use(express.urlencoded({ extended: true }));
 app.options('/api/stripe/create-checkout-session', cors());

@@ -28,6 +28,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 import DashboardScreen from './screens/DashboardScreen';
 import ProductEditScreen from './screens/ProductEditScreen';
 import ManageOrderScreen from './screens/ManageOrdersScreen';
+import ManageProductsScreen from './screens/ManageProductsScreen';
 
 function App() {
 	const { state, dispatch: ctxDispatch } = useContext(Store);
@@ -180,6 +181,14 @@ function App() {
 								element={
 									<ProtectedRoute>
 										<DashboardScreen />
+									</ProtectedRoute>
+								}
+							/>
+							<Route
+								path="/manageProducts"
+								element={
+									<ProtectedRoute>
+										<ManageProductsScreen />
 									</ProtectedRoute>
 								}
 							/>

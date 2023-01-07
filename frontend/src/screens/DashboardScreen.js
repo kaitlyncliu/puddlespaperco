@@ -22,7 +22,7 @@ export default function DashboardScreen() {
 								<i className="fas fa-shapes fa-2x p-4"></i>
 							</Col>
 							<Col md={8} className="my-auto">
-								<Link to="/editProduct">
+								<Link to="/manageProducts">
 									<p
 										className="text-center mb-0"
 										style={{ fontSize: '1.25em' }}

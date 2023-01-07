@@ -1,7 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { expressjwt } from 'express-jwt';
 import jwks from 'jwks-rsa';
-import axios from 'axios';
 
 export const generateToken = (user) => {
 	return jwt.sign(

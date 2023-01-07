@@ -90,7 +90,7 @@ function ProductScreen() {
 						))}
 					</Carousel>
 				</Col>
-				<Col md={3}>
+				<Col md={6}>
 					<ListGroup variant="flush">
 						<ListGroup.Item>
 							<Helmet>
@@ -104,14 +104,12 @@ function ProductScreen() {
 								numReviews={product.numReviews}
 							></Rating>
 						</ListGroup.Item>
-						<ListGroup.Item>Price: ${product.price}</ListGroup.Item>
 						<ListGroup.Item>
 							About this item:
 							<p>{product.description}</p>
 						</ListGroup.Item>
 					</ListGroup>
-				</Col>
-				<Col md={3}>
+
 					<Card>
 						<Card.Body>
 							<ListGroup variant="flush">

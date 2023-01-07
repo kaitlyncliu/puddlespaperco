@@ -1,8 +1,11 @@
 import express from 'express';
 import expressAsyncHandler from 'express-async-handler';
 import Product from '../models/productModel.js';
+import multer from 'multer';
 
 const productRouter = express.Router();
+
+const upload = multer({ dest: '../frontend/public/images/' });
 
 productRouter.get('/', async (req, res) => {
 	const products = await Product.find();
@@ -83,6 +86,42 @@ productRouter.get(
 	expressAsyncHandler(async (req, res) => {
 		const categories = await Product.find().distinct('category');
 		res.send(categories);
+	})
+);
+
+productRouter.post(
+	'/new',
+	expressAsyncHandler(async (req, res) => {
+		const product = new Product({
+			slug: req.body.itemSlug,
+			name: req.body.itemName,
+			images: req.body.itemImages,
+			category: req.body.itemCategory,
+			description: req.body.itemDescription,
+			price: req.body.itemPrice,
+			countInStock: req.body.itemCount,
+		});
+		const newProduct = await product.save();
+		res.send('success');
+	})
+);
+
+productRouter.put(
+	'/edit',
+	expressAsyncHandler(async (req, res) => {
+		const product = await Product.findById(req.body.itemId);
+		if (product) {
+			product.name = req.body.itemName || product.name;
+			product.images = req.body.itemImages || product.images;
+			product.category = req.body.itemCategory || product.category;
+			product.description = req.body.itemDescription || product.description;
+			product.price = req.body.itemPrice || product.price;
+			product.countInStock = req.body.itemCount || product.countInStock;
+			const updatedProduct = await product.save();
+			res.send('success');
+		} else {
+			res.status(404).send({ message: 'Product not found' });
+		}
 	})
 );
 

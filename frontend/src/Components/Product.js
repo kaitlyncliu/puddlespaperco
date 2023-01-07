@@ -13,7 +13,6 @@ function Product(props) {
 	const {
 		cart: { cartItems },
 	} = state;
-	const { isAuthenticated, user } = useAuth0();
 
 	const addToCartHandler = async (item) => {
 		const existItem = cartItems.find((x) => x._id === product._id);
@@ -39,16 +38,6 @@ function Product(props) {
 					alt={product.name}
 				/>
 			</Link>
-			{isAuthenticated && user.isAdmin ? (
-				<Link to={`/editProduct/${product.slug}`}>
-					<i
-						className="far fa-edit"
-						style={{ position: 'absolute', top: '7px', right: '7px' }}
-					></i>
-				</Link>
-			) : (
-				<></>
-			)}
 
 			<Card.Body className="d-flex flex-column">
 				<Link to={`/product/${product.slug}`}>
