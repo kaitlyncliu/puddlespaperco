@@ -4,7 +4,7 @@ import Rating from './Rating';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/esm/Button';
 import Carousel from 'react-bootstrap/Carousel';
-import { useCallback, useEffect, useState } from 'react';
+import { useState } from 'react';
 import Row from 'react-bootstrap/esm/Row';
 import Col from 'react-bootstrap/esm/Col';
 import Form from 'react-bootstrap/Form';
@@ -25,57 +25,84 @@ function ProductEdit(props) {
 	const [itemImages, setItemImages] = useState(product.images);
 	const [imageIndex, setImageIndex] = useState(0);
 	const [imageFiles, setImageFiles] = useState([]);
+	const [itemIndices, setItemIndices] = useState(
+		new Array(itemImages.length).fill(null)
+	);
+	const [oldImages, setOldImages] = useState(product.images);
 
-	const handleShow = () => setShow(true);
-	const handleClose = () => setShow(false);
+	const handleShow = () => {
+		setShow(true);
+		setOldImages(itemImages);
+	};
+	const handleClose = () => {
+		setShow(false);
+		setItemImages(oldImages);
+	};
 	const handleSelect = (selectedIndex, e) => {
 		setImageIndex(selectedIndex);
 	};
 
 	const handleSave = async (e) => {
 		e.preventDefault();
+		e.nativeEvent.stopImmediatePropagation();
 		try {
-			const { success } = await axios.put('api/products/edit', {
-				itemId: product._id,
-				itemName: itemName,
-				itemPrice: itemPrice,
-				itemCategory: itemCategory,
-				itemDescription: itemDescription,
-				itemCount: itemCount,
-				itemImages: itemImages,
-			});
+			const formData = new FormData();
+			imageFiles.forEach((file) => formData.append('imageFiles[]', file));
+			formData.append('itemId', product._id);
+			formData.append('itemName', itemName);
+			formData.append('itemPrice', itemPrice);
+			formData.append('itemCategory', itemCategory);
+			formData.append('itemDescription', itemDescription);
+			formData.append('itemCount', itemCount);
+			itemImages.forEach((img) => formData.append('itemImages[]', img));
+			itemIndices.forEach((i) => formData.append('itemIndices[]', i));
+			console.log(imageFiles);
+
+			// const { success } = await axios.put('api/products/edit', formData);
 			toast.success('Product updated!');
 		} catch (err) {
 			toast.error(getError(err));
 		}
 	};
 
-	useEffect(() => {
-		if (imageFiles.length < 1) return;
-		const newImageURLs = [];
-		imageFiles.forEach((image) =>
-			newImageURLs.push(URL.createObjectURL(image))
-		);
-		setItemImages((prevImages) => [...prevImages, ...newImageURLs]);
-	}, [imageFiles]);
-
 	const handleImageChange = (e) => {
-		setImageFiles([...e.target.files]);
+		const image = e.target.files[0];
+		const newImageURL = URL.createObjectURL(image);
+		image.src = newImageURL;
+		setImageFiles([...imageFiles, image]);
+		setItemImages([...itemImages, newImageURL]);
+		e.target.value = null;
+	};
+
+	const handleDelete = (image) => {
+		const newImages = Array.from(itemImages);
+		const currImgIndex = newImages.findIndex((img) => img === image);
+		newImages.splice(currImgIndex, 1);
+		setItemImages(newImages);
+		if (image.startsWith('blob')) {
+			const newFiles = Array.from(imageFiles);
+			const currFileIndex = newFiles.findIndex((img) => img.src === image);
+			newFiles.splice(currFileIndex, 1);
+			setImageFiles(newFiles);
+		}
 	};
 
 	const handleOnDragEnd = (result) => {
 		if (!result.destination) return;
 
 		const items = Array.from(itemImages);
+		const indices = Array.from(itemIndices);
 
 		//Changing the position of Array element
 		const [reorderedItem] = items.splice(result.source.index, 1);
+		const [reorderedIndex] = indices.splice(result.source.index, 1);
 		items.splice(result.destination.index, 0, reorderedItem);
+		indices.splice(result.destination.index, 0, reorderedIndex);
 
 		//Updating the list
 		setItemImages(items);
+		setItemIndices(indices);
 	};
-	console.log(itemImages);
 
 	return (
 		<>
@@ -135,7 +162,6 @@ function ProductEdit(props) {
 										<Form.Label>Upload product images</Form.Label>
 										<Form.Control
 											type="file"
-											multiple
 											accept="image/*"
 											onChange={handleImageChange}
 										/>
@@ -156,6 +182,7 @@ function ProductEdit(props) {
 														key={`${image}-draggable`}
 														draggableId={`${image}-draggable`}
 														index={index}
+														image={image}
 													>
 														{(provided) => (
 															<Col
@@ -163,12 +190,27 @@ function ProductEdit(props) {
 																{...provided.draggableProps}
 																{...provided.dragHandleProps}
 																md={2}
+																image={image}
 															>
-																<img
-																	className="img-fluid"
-																	src={image}
-																	alt={product.name}
-																></img>
+																<div
+																	style={{
+																		display: 'flex',
+																	}}
+																	image={image}
+																>
+																	<img
+																		className="img-fluid"
+																		src={image}
+																		alt={product.name}
+																	></img>
+
+																	<span
+																		className="delete-btn"
+																		onClick={() => handleDelete(image)}
+																	>
+																		&times;
+																	</span>
+																</div>
 															</Col>
 														)}
 													</Draggable>

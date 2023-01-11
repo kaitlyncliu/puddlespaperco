@@ -131,3 +131,10 @@ a:hover {
 ul {
 	list-style-type: none;
 }
+
+.delete-btn {
+	cursor: pointer;
+	font-weight: bolder;
+	font-size: 1.2em;
+	margin-top: 0%;
+}

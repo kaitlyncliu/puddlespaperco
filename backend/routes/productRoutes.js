@@ -5,7 +5,17 @@ import multer from 'multer';
 
 const productRouter = express.Router();
 
-const upload = multer({ dest: '../frontend/public/images/' });
+var storage = multer.diskStorage({
+	destination: (req, file, cb) => {
+		//ensure that this folder already exists in your project directory
+		cb(null, '../frontend/public/images');
+	},
+	filename: (req, file, cb) => {
+		cb(null, Date.now() + '-' + file.originalname);
+	},
+});
+
+const upload = multer({ storage: storage });
 
 productRouter.get('/', async (req, res) => {
 	const products = await Product.find();
@@ -91,6 +101,7 @@ productRouter.get(
 
 productRouter.post(
 	'/new',
+	upload.array('files'),
 	expressAsyncHandler(async (req, res) => {
 		const product = new Product({
 			slug: req.body.itemSlug,
@@ -108,16 +119,36 @@ productRouter.post(
 
 productRouter.put(
 	'/edit',
+	upload.array('imageFiles[]'),
 	expressAsyncHandler(async (req, res) => {
 		const product = await Product.findById(req.body.itemId);
 		if (product) {
+			console.log(req.files);
+			const nameMap = new Map();
 			product.name = req.body.itemName || product.name;
+			req.files.forEach((image) => {
+				nameMap.set(image.originalname, image.filename);
+			});
+
 			product.images = req.body.itemImages || product.images;
+			// replacing images with correct urls after saved
+			if (req.files && req.body.itemImages) {
+				for (var i = 0; i < product.images.length; i++) {
+					const im = product.images[i];
+					if (im.startsWith('blob')) {
+						const origName = req.body.imageMap.get(im);
+						const newName = nameMap.get(origName);
+						product.images.splice(i, 1, newName);
+					}
+				}
+			}
+			console.log(product.images);
+
 			product.category = req.body.itemCategory || product.category;
 			product.description = req.body.itemDescription || product.description;
 			product.price = req.body.itemPrice || product.price;
 			product.countInStock = req.body.itemCount || product.countInStock;
-			const updatedProduct = await product.save();
+			//const updatedProduct = await product.save();
 			res.send('success');
 		} else {
 			res.status(404).send({ message: 'Product not found' });
