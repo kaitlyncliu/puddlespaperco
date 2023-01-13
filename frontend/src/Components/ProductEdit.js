@@ -25,9 +25,6 @@ function ProductEdit(props) {
 	const [itemImages, setItemImages] = useState(product.images);
 	const [imageIndex, setImageIndex] = useState(0);
 	const [imageFiles, setImageFiles] = useState([]);
-	const [itemIndices, setItemIndices] = useState(
-		new Array(itemImages.length).fill(null)
-	);
 	const [oldImages, setOldImages] = useState(product.images);
 
 	const handleShow = () => {
@@ -44,21 +41,31 @@ function ProductEdit(props) {
 
 	const handleSave = async (e) => {
 		e.preventDefault();
-		e.nativeEvent.stopImmediatePropagation();
 		try {
 			const formData = new FormData();
-			imageFiles.forEach((file) => formData.append('imageFiles[]', file));
 			formData.append('itemId', product._id);
+
+			imageFiles.forEach((file) => formData.append('imageFiles[]', file));
 			formData.append('itemName', itemName);
 			formData.append('itemPrice', itemPrice);
 			formData.append('itemCategory', itemCategory);
 			formData.append('itemDescription', itemDescription);
 			formData.append('itemCount', itemCount);
-			itemImages.forEach((img) => formData.append('itemImages[]', img));
-			itemIndices.forEach((i) => formData.append('itemIndices[]', i));
-			console.log(imageFiles);
 
-			// const { success } = await axios.put('api/products/edit', formData);
+			// set itemIndices to corresponding imageFiles index
+			const indexArr = new Array(itemImages.length).fill(null);
+			for (let i = 0; i < itemImages.length; i++) {
+				const curr = itemImages[i];
+				if (curr.startsWith('blob')) {
+					const ind = imageFiles.findIndex((file) => file.src === curr);
+					indexArr[i] = ind;
+				}
+			}
+			itemImages.forEach((img) => formData.append('itemImages[]', img));
+			indexArr.forEach((i) => formData.append('itemIndices[]', i));
+
+			const { data } = await axios.put('api/products/edit', formData);
+			setItemImages(data);
 			toast.success('Product updated!');
 		} catch (err) {
 			toast.error(getError(err));
@@ -91,17 +98,13 @@ function ProductEdit(props) {
 		if (!result.destination) return;
 
 		const items = Array.from(itemImages);
-		const indices = Array.from(itemIndices);
 
 		//Changing the position of Array element
 		const [reorderedItem] = items.splice(result.source.index, 1);
-		const [reorderedIndex] = indices.splice(result.source.index, 1);
 		items.splice(result.destination.index, 0, reorderedItem);
-		indices.splice(result.destination.index, 0, reorderedIndex);
 
 		//Updating the list
 		setItemImages(items);
-		setItemIndices(indices);
 	};
 
 	return (
@@ -137,7 +140,7 @@ function ProductEdit(props) {
 				<Modal.Header closeButton>
 					<Modal.Title>Editing {product.name}</Modal.Title>
 				</Modal.Header>
-				<Form onSubmit={handleSave}>
+				<Form>
 					<Modal.Body>
 						<Row>
 							<Col md={6}>
@@ -288,7 +291,7 @@ function ProductEdit(props) {
 						<Button variant="secondary" onClick={handleClose}>
 							Cancel
 						</Button>
-						<Button type="submit" variant="secondary">
+						<Button type="submit" variant="secondary" onClick={handleSave}>
 							Save Changes
 						</Button>
 					</Modal.Footer>
