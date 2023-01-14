@@ -10,7 +10,7 @@ import Col from 'react-bootstrap/esm/Col';
 import Form from 'react-bootstrap/Form';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { getError } from '../util';
+import { createFormData, getError } from '../util';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 
 function ProductEdit(props) {
@@ -44,25 +44,16 @@ function ProductEdit(props) {
 		try {
 			const formData = new FormData();
 			formData.append('itemId', product._id);
-
-			imageFiles.forEach((file) => formData.append('imageFiles[]', file));
-			formData.append('itemName', itemName);
-			formData.append('itemPrice', itemPrice);
-			formData.append('itemCategory', itemCategory);
-			formData.append('itemDescription', itemDescription);
-			formData.append('itemCount', itemCount);
-
-			// set itemIndices to corresponding imageFiles index
-			const indexArr = new Array(itemImages.length).fill(null);
-			for (let i = 0; i < itemImages.length; i++) {
-				const curr = itemImages[i];
-				if (curr.startsWith('blob')) {
-					const ind = imageFiles.findIndex((file) => file.src === curr);
-					indexArr[i] = ind;
-				}
-			}
-			itemImages.forEach((img) => formData.append('itemImages[]', img));
-			indexArr.forEach((i) => formData.append('itemIndices[]', i));
+			const info = {
+				itemName: itemName,
+				itemPrice: itemPrice,
+				itemCategory: itemCategory,
+				itemDescription: itemDescription,
+				itemCount: itemCount,
+				itemImages: itemImages,
+				imageFiles: imageFiles,
+			};
+			createFormData(formData, info);
 
 			const { data } = await axios.put('api/products/edit', formData);
 			setItemImages(data);

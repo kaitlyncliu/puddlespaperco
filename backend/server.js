@@ -2,7 +2,6 @@ import express, { application } from 'express';
 import path from 'path';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import multer from 'multer';
 import cors from 'cors';
 
 import seedRouter from './routes/seedRoutes.js';
@@ -24,7 +23,6 @@ mongoose
 	});
 
 const app = express();
-const upload = multer({ dest: '../frontend/public/images/' });
 
 app.use(express.urlencoded({ extended: true }));
 app.options('/api/stripe/create-checkout-session', cors());

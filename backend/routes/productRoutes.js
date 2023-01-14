@@ -101,19 +101,31 @@ productRouter.get(
 
 productRouter.post(
 	'/new',
-	upload.array('files'),
+	upload.array('imageFiles[]'),
 	expressAsyncHandler(async (req, res) => {
-		const product = new Product({
-			slug: req.body.itemSlug,
-			name: req.body.itemName,
-			images: req.body.itemImages,
-			category: req.body.itemCategory,
-			description: req.body.itemDescription,
-			price: req.body.itemPrice,
-			countInStock: req.body.itemCount,
-		});
-		const newProduct = await product.save();
-		res.send('success');
+		try {
+			const productImages = req.body.itemImages;
+			for (var i = 0; i < productImages.length; i++) {
+				const im = productImages[i];
+				if (im.startsWith('blob')) {
+					const newFile = req.files[req.body.itemIndices[i]];
+					productImages.splice(i, 1, '/images/' + newFile.filename);
+				}
+			}
+			const product = new Product({
+				slug: req.body.itemSlug,
+				name: req.body.itemName,
+				images: productImages,
+				category: req.body.itemCategory,
+				description: req.body.itemDescription,
+				price: parseFloat(req.body.itemPrice),
+				countInStock: parseInt(req.body.itemCount),
+			});
+			const newProduct = await product.save();
+			res.send(productImages);
+		} catch (error) {
+			res.send(error);
+		}
 	})
 );
 
@@ -123,12 +135,6 @@ productRouter.put(
 	expressAsyncHandler(async (req, res) => {
 		const product = await Product.findById(req.body.itemId);
 		if (product) {
-			const nameMap = new Map();
-			product.name = req.body.itemName || product.name;
-			req.files.forEach((image) => {
-				nameMap.set(image.originalname, image.filename);
-			});
-
 			product.images = req.body.itemImages || product.images;
 			// replacing images with correct urls after saved
 			if (req.files && req.body.itemImages) {

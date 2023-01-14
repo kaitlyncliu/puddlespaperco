@@ -3,7 +3,6 @@ import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import Rating from './Rating';
 import axios from 'axios';
-import { useAuth0 } from '@auth0/auth0-react';
 import { useContext } from 'react';
 import { Store } from '../Store';
 
@@ -43,7 +42,12 @@ function Product(props) {
 				<Link to={`/product/${product.slug}`}>
 					<Card.Title>{product.name}</Card.Title>
 				</Link>
-				<Rating rating={product.rating} numReviews={product.numReviews} />
+				{product.rating && product.numReviews ? (
+					<Rating rating={product.rating} numReviews={product.numReviews} />
+				) : (
+					<></>
+				)}
+
 				<Card.Text>${product.price}</Card.Text>
 				{product.countInStock === 0 ? (
 					<Button variant="light" disabled>
