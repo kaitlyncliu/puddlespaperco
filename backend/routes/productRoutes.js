@@ -103,29 +103,25 @@ productRouter.post(
 	'/new',
 	upload.array('imageFiles[]'),
 	expressAsyncHandler(async (req, res) => {
-		try {
-			const productImages = req.body.itemImages;
-			for (var i = 0; i < productImages.length; i++) {
-				const im = productImages[i];
-				if (im.startsWith('blob')) {
-					const newFile = req.files[req.body.itemIndices[i]];
-					productImages.splice(i, 1, '/images/' + newFile.filename);
-				}
+		const productImages = req.body.itemImages;
+		for (var i = 0; i < productImages.length; i++) {
+			const im = productImages[i];
+			if (im.startsWith('blob')) {
+				const newFile = req.files[req.body.itemIndices[i]];
+				productImages.splice(i, 1, '/images/' + newFile.filename);
 			}
-			const product = new Product({
-				slug: req.body.itemSlug,
-				name: req.body.itemName,
-				images: productImages,
-				category: req.body.itemCategory,
-				description: req.body.itemDescription,
-				price: parseFloat(req.body.itemPrice),
-				countInStock: parseInt(req.body.itemCount),
-			});
-			const newProduct = await product.save();
-			res.send(productImages);
-		} catch (error) {
-			res.send(error);
 		}
+		const product = new Product({
+			slug: req.body.itemSlug,
+			name: req.body.itemName,
+			images: productImages,
+			category: req.body.itemCategory,
+			description: req.body.itemDescription,
+			price: parseFloat(req.body.itemPrice),
+			countInStock: parseInt(req.body.itemCount),
+		});
+		const newProduct = await product.save();
+		res.send(newProduct.images);
 	})
 );
 
@@ -148,10 +144,12 @@ productRouter.put(
 			}
 
 			product.category = req.body.itemCategory || product.category;
+			product.name = req.body.name || product.name;
 			product.description = req.body.itemDescription || product.description;
 			product.price = parseFloat(req.body.itemPrice) || product.price;
 			product.countInStock =
 				parseInt(req.body.itemCount) || product.countInStock;
+
 			const updatedProduct = await product.save();
 			res.send(product.images);
 		} else {
